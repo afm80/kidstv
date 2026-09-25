@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>تلفزيون الأطفال</title>
+
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Cairo:wght@700&display=swap');
+
+html, body {
+  margin: 0;
+  padding: 0;
+  min-height: 100%;
+}
+
+body {
+  font-family: 'Cairo', sans-serif;
+  background-image: url('https://c.top4top.io/p_36090k7by0.png');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+  text-align: center;
+}
+
+header {
+  width: 100%;
+  padding: 10px 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+header img {
+  max-height: 60px;
+  width: auto;
+  display: block;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 16px;
+  padding: 16px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.card {
+  background: linear-gradient(135deg, #ffffff 0%, #e8e8e8 50%, #d4d4d4 100%);
+  border-radius: 12px;
+  text-decoration: none;
+  padding: 8px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  aspect-ratio: 2 / 3;
+  transition: transform 0.2s ease;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+  cursor: pointer;
+}
+
+.card:hover {
+  transform: scale(1.02);
+  box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+}
+
+.card img {
+  width: 100%;
+  height: auto;
+  object-fit: cover;
+  border-radius: 10px;
+  flex: 1;
+  min-height: 0;
+}
+
+.card-title {
+  font-size: 14px;
+  color: #333333;
+  padding-top: 8px;
+  text-align: center;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-weight: bold;
+}
+
+@media (max-width: 400px) {
+  .grid { gap: 10px; padding: 10px; }
+  .card-title { font-size: 12px; }
+}
+
+@media (min-width: 768px) and (max-width: 1024px) {
+  .grid { gap: 18px; padding: 18px; }
+  .card-title { font-size: 15px; }
+}
+
+@media (min-width: 1200px) {
+  .grid { gap: 24px; padding: 24px; }
+  .card-title { font-size: 16px; }
+}
+</style>
+</head>
+
+<body>
+
+<header>
+  <img src="https://raw.githubusercontent.com/h-80/img/refs/heads/main/kids.png" alt="شعار الواجهة">
+</header>
+
+<div class="grid">
+  <a href="https://alfahamtv.github.io/kids-tv-iive" class="card">
+    <img src="https://raw.githubusercontent.com/h-80/img/refs/heads/main/KIDS1.png">
+    <div class="card-title">تلفزيون الأطفال بث مباشر</div>
+  </a>
+
+  <a href="https://alfahamtv.github.io/kids-tv--ch-iive" class="card">
+    <img src="https://raw.githubusercontent.com/h-80/img/refs/heads/main/KIDS2.png">
+    <div class="card-title">قنوات اليوتيوب بث مباشر</div>
+  </a>
+
+  <a href="https://alfahamtv.github.io/kids-tv-ch" class="card">
+    <img src="https://raw.githubusercontent.com/h-80/img/refs/heads/main/KIDS3.png">
+    <div class="card-title">قنوات الأطفال الفضائية</div>
+  </a>
+
+  <a href="https://www.crazygames.com" class="card">
+    <img src="https://raw.githubusercontent.com/h-80/img/refs/heads/main/KIDS4.png">
+    <div class="card-title">العاب الأطفال</div>
+  </a>
+</div>
+
+</body>
+</html>

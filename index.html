@@ -752,10 +752,11 @@ function applyPublishedContent(){
       var id=String(data.videoId||record.id||'');
       if(!id||!categories[categoryId]||!/^[-_A-Za-z0-9]{11}$/.test(id))return;
       var exists=categories[categoryId].some(function(video){return video.id===id;});
-      if(!exists)categories[categoryId].push({id:id,title:String(data.title||''),cat:categoryId});
+      if(!exists)categories[categoryId].push({id:id,title:String(data.title||''),cat:categoryId,createdAt:Number(data.createdAt)||0});
     });
     allYouTubeVideos=[];
     Object.keys(categories).forEach(function(categoryId){
+      categories[categoryId].sort(function(a,b){return (Number(b.createdAt)||0)-(Number(a.createdAt)||0);});
       categories[categoryId].forEach(function(video){allYouTubeVideos.push(Object.assign({},video,{cat:categoryId}));});
     });
     renderPublishedCategories();

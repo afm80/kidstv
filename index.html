@@ -2,136 +2,663 @@
 <html lang="ar" dir="rtl">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>تلفزيون الأطفال</title>
-
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Cairo:wght@700&display=swap');
-
-html, body {
-  margin: 0;
-  padding: 0;
-  min-height: 100%;
-}
-
-body {
-  font-family: 'Cairo', sans-serif;
-  background-image: url('https://c.top4top.io/p_36090k7by0.png');
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
-  background-attachment: fixed;
-  text-align: center;
-}
-
-header {
-  width: 100%;
-  padding: 10px 0;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-header img {
-  max-height: 60px;
-  width: auto;
-  display: block;
-}
-
-.grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-  gap: 16px;
-  padding: 16px;
-  max-width: 1200px;
-  margin: 0 auto;
-}
-
-.card {
-  background: linear-gradient(135deg, #ffffff 0%, #e8e8e8 50%, #d4d4d4 100%);
-  border-radius: 12px;
-  text-decoration: none;
-  padding: 8px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  aspect-ratio: 2 / 3;
-  transition: transform 0.2s ease;
-  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-  cursor: pointer;
-}
-
-.card:hover {
-  transform: scale(1.02);
-  box-shadow: 0 6px 12px rgba(0,0,0,0.15);
-}
-
-.card img {
-  width: 100%;
-  height: auto;
-  object-fit: cover;
-  border-radius: 10px;
-  flex: 1;
-  min-height: 0;
-}
-
-.card-title {
-  font-size: 14px;
-  color: #333333;
-  padding-top: 8px;
-  text-align: center;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  font-weight: bold;
-}
-
-@media (max-width: 400px) {
-  .grid { gap: 10px; padding: 10px; }
-  .card-title { font-size: 12px; }
-}
-
-@media (min-width: 768px) and (max-width: 1024px) {
-  .grid { gap: 18px; padding: 18px; }
-  .card-title { font-size: 15px; }
-}
-
-@media (min-width: 1200px) {
-  .grid { gap: 24px; padding: 24px; }
-  .card-title { font-size: 16px; }
-}
+@import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap');
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;padding:0;width:100%;font-family:'Cairo',sans-serif;background:#0f0f3d;color:#fff;}
+.cats-bar{position:sticky;top:0;z-index:50;background:#0f0f3d;padding:8px 10px;}
+.cats{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;flex-wrap:nowrap;}
+.cats::-webkit-scrollbar{display:none}
+.cat{flex:0 0 auto;background:#1c1c5c;border:none;color:#fff;font-family:inherit;font-size:13px;font-weight:700;padding:8px 14px;border-radius:8px;display:flex;align-items:center;gap:5px;cursor:pointer;white-space:nowrap;}
+.cat.active{background:#fff;color:#000}
+.cat .ico{display:inline-block;width:16px;height:16px;color:#fff;line-height:1;flex-shrink:0;}
+.cat.active .ico{color:#000}
+.cat .ico svg{width:100%;height:100%;display:block;fill:currentColor}
+@media (max-width: 600px){.cats-bar{padding:6px 8px;}.cats{gap:5px;}.cat{font-size:12px;padding:7px 12px;gap:4px;}.cat .ico{width:14px;height:14px;}}
+@media (max-width: 450px){.cats-bar{padding:5px 6px;}.cats{gap:4px;}.cat{font-size:11px;padding:6px 10px;gap:3px;}.cat .ico{width:13px;height:13px;}}
+@media (max-width: 360px){.cats-bar{padding:5px 5px;}.cats{gap:3px;}.cat{font-size:10px;padding:5px 8px;gap:2px;}.cat .ico{width:12px;height:12px;}}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;padding:12px;}
+.card{background:#000;border:none;padding:6px;display:flex;flex-direction:column;cursor:pointer;font:inherit;color:inherit;text-align:right;border-radius:14px;}
+.thumb-wrap{position:relative;width:100%;aspect-ratio:16/9;overflow:hidden;background:#222;border-radius:10px;}
+.thumb-wrap img{width:100%;height:100%;object-fit:cover;display:block;}
+.duration{position:absolute;bottom:6px;left:6px;background:rgba(0,0,0,.8);color:#fff;font-size:11px;font-weight:700;padding:2px 6px;border-radius:4px;}
+.card-title{font-size:13px;font-weight:700;color:#fff;background:transparent;padding:8px 4px 4px 24px;margin:0;line-height:1.35;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;position:relative;text-align:right;}
+.card-title::after{content:"⋮";position:absolute;left:2px;top:50%;transform:translateY(-50%);font-size:18px;color:#aaa;}
+#playerPage{position:fixed;inset:0;background:#000;display:none;z-index:9999;overflow-y:auto;}
+.player-top{position:relative;width:100%;aspect-ratio:16/9;background:#000;}
+#youtubeFrame{width:100%;height:100%;border:none;}
+#ytPoster{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:2;display:none;}
+.close-btn{position:absolute;top:10px;right:10px;z-index:3;background:rgba(0,0,0,.6);color:#fff;border:none;width:36px;height:36px;border-radius:50%;font-size:18px;cursor:pointer;}
+.related{padding:14px 0 30px;}
+.related h3{font-size:14px;color:#fff;margin:0 12px 10px;}
+.related-scroll{display:flex;gap:10px;overflow-x:auto;padding:0 12px 10px;scrollbar-width:none;-webkit-overflow-scrolling:touch;scroll-behavior:smooth;cursor:grab;}
+.related-scroll::-webkit-scrollbar{display:none}
+.related-scroll.dragging{cursor:grabbing}
+.related-card{flex:0 0 200px;background:#000;border:none;padding:5px;cursor:pointer;text-align:right;font:inherit;color:inherit;border-radius:12px;}
+.related-thumb{position:relative;width:100%;aspect-ratio:16/9;overflow:hidden;background:#222;border-radius:8px;}
+.related-thumb img{width:100%;height:100%;object-fit:cover;display:block;}
+.related-title{font-size:12px;font-weight:700;color:#fff;background:transparent;padding:6px 4px 4px 4px;margin:0;line-height:1.3;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}
+#satPage{display:none;}
+#satContent{text-align:center;background:#0f0f3d;}
+#satContent .grid-sat{display:grid;grid-template-columns:repeat(auto-fit,120px);gap:16px;padding:16px;max-width:1200px;margin:0 auto;justify-content:center;}
+#satContent .card-sat{width:120px;background:linear-gradient(135deg,#fff 0%,#e8e8e8 50%,#d4d4d4 100%);border-radius:12px;text-decoration:none;padding:8px;display:flex;flex-direction:column;align-items:center;transition:transform .2s ease;box-shadow:0 4px 8px rgba(0,0,0,.1);cursor:pointer;box-sizing:border-box;}
+#satContent .card-sat:hover{transform:scale(1.03);box-shadow:0 6px 12px rgba(0,0,0,.15);}
+#satContent .card-sat img{width:100%;aspect-ratio:1/1;object-fit:cover;border-radius:8px;display:block;}
+#satContent .card-title-sat{font-size:11px;color:#333;margin-top:6px;text-align:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-weight:bold;width:100%;}
+#satPlayer{display:none;max-width:900px;margin:20px auto;padding:16px;}
+#satPlayer .video-wrap{position:relative;width:100%;border-radius:12px;overflow:hidden;box-shadow:0 6px 20px rgba(0,0,0,.3);background:#000;aspect-ratio:16/9;}
+#satPlayer video,#satPlayer iframe{position:absolute;top:0;left:0;width:100%;height:100%;border:0;background:#000;}
+#satMsg{color:#fff;background:rgba(0,0,0,.7);padding:10px;border-radius:8px;font-size:13px;margin-top:10px;display:none;}
+#satPlayer .player-controls{display:flex;flex-wrap:wrap;gap:8px;align-items:center;justify-content:center;margin-top:10px;}
+#satPlayer .player-controls select,#satPlayer .quality-button,#satPlayer .quality-toggle{border:1px solid rgba(255,255,255,.3);border-radius:8px;background:rgba(0,0,0,.75);color:#fff;padding:8px 12px;font:inherit;cursor:pointer;}
+#satPlayer .player-switch{border:1px solid rgba(255,255,255,.3);border-radius:8px;background:rgba(0,0,0,.75);color:#fff;padding:8px 12px;font:inherit;cursor:pointer;}
+#satPlayer .player-switch:hover,#satPlayer .player-switch.active{background:#ff6600;}
+#satPlayer .retry-switch{order:-1;border:1px solid rgba(255,255,255,.3);border-radius:50%;background:rgba(0,0,0,.75);color:#fff;width:34px;height:34px;padding:0;font:inherit;font-size:20px;font-weight:900;cursor:pointer;}
+#satPlayer .retry-switch:hover{background:#ff6600;transform:rotate(90deg);}
+#satPlayer .retry-switch[hidden]{display:none;}
+#satPlayer .quality-button.active,#satPlayer .quality-button:hover,#satPlayer .quality-toggle:hover{background:#ff6600;}
+#satPlayer .quality-toggle{display:none;}
+#satPlayer .quality-menu{position:relative;display:inline-flex;}
+#satPlayer .quality-options{position:absolute;bottom:calc(100% + 6px);right:0;display:none;min-width:130px;padding:5px;border-radius:8px;background:rgba(0,0,0,.9);z-index:4;}
+#satPlayer .quality-options.open{display:grid;gap:4px;}
+#satPlayer .quality-options button{border:0;border-radius:5px;padding:7px 9px;background:transparent;color:#fff;cursor:pointer;text-align:right;}
+#satPlayer .quality-options button:hover{background:#ff6600;}
+#kidsGamesPage{display:none;width:100%;height:calc(100vh - 55px);}
+#kidsGamesFrame{width:100%;height:100%;border:none;background:#0f0f3d;display:block;}
+#searchPage{display:none;padding:12px;}
+#searchInput{width:100%;padding:12px 16px;border-radius:12px;border:1px solid rgba(255,255,255,.2);background:#1c1c5c;color:#fff;font-family:inherit;font-size:14px;font-weight:700;outline:none;box-sizing:border-box;}
+#searchInput::placeholder{color:#888;}
+#searchEmpty{text-align:center;color:#888;padding:40px 20px;font-size:14px;}
 </style>
 </head>
-
 <body>
 
-<header>
-  <img src="https://raw.githubusercontent.com/h-80/img/refs/heads/main/kids.png" alt="شعار الواجهة">
-</header>
-
-<div class="grid">
-  <a href="https://afm80.github.io/kidstvlive
-" class="card">
-    <img src="https://raw.githubusercontent.com/h-80/img/refs/heads/main/KIDS1.png">
-    <div class="card-title">تلفزيون الأطفال بث مباشر</div>
-  </a>
-
-  <a href="https://afm80.github.io/kidstvtubelive
-" class="card">
-    <img src="https://raw.githubusercontent.com/h-80/img/refs/heads/main/KIDS2.png">
-    <div class="card-title">قنوات اليوتيوب بث مباشر</div>
-  </a>
-
-  <a href="https://afm80.github.io/kidstvchlive" class="card">
-    <img src="https://raw.githubusercontent.com/h-80/img/refs/heads/main/KIDS3.png">
-    <div class="card-title">قنوات الأطفال الفضائية</div>
-  </a>
-
-  <a href="https://www.crazygames.com" class="card">
-    <img src="https://raw.githubusercontent.com/h-80/img/refs/heads/main/KIDS4.png">
-    <div class="card-title">العاب الأطفال</div>
-  </a>
+<div class="cats-bar">
+  <div class="cats" id="catsBar">
+    <button class="cat active" data-cat="all"><span class="ico"><svg viewBox="0 0 24 24"><path d="M3 3h8v8H3V3zm10 0h8v8h-8V3zM3 13h8v8H3v-8zm10 0h8v8h-8v-8z"/></svg></span>الكل</button>
+    <button class="cat" data-cat="live"><span class="ico"><svg viewBox="0 0 24 24"><path d="M12 8a4 4 0 1 0 0 8 4 4 0 0 0 0-8zm0-6a10 10 0 0 0-7.1 2.9l1.4 1.4a8 8 0 0 1 11.4 0l1.4-1.4A10 10 0 0 0 12 2zm0 20a10 10 0 0 0 7.1-2.9l-1.4-1.4a8 8 0 0 1-11.4 0l-1.4 1.4A10 10 0 0 0 12 22z"/></svg></span>البث المباشر</button>
+    <button class="cat" data-cat="videos"><span class="ico"><svg viewBox="0 0 24 24"><path d="M4 5h16a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1zm1 2v10h14V7H5zm5 1.5 5 3.5-5 3.5v-7z"/></svg></span>فيديوهات</button>
+    <button class="cat" data-cat="sat"><span class="ico"><svg viewBox="0 0 24 24"><path d="M4 6h16v10H4V6zm2 2v6h12V8H6zm-2 10h16v2H4v-2z"/></svg></span>قنوات فضائية</button>
+    <button class="cat" data-cat="kidsgames"><span class="ico"><svg viewBox="0 0 24 24"><path d="M7 6h10a5 5 0 0 1 0 10H7A5 5 0 0 1 7 6zm0 2a3 3 0 0 0 0 6h10a3 3 0 0 0 0-6H7zm0 1.5a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3z"/></svg></span>ألعاب الأطفال</button>
+    <button class="cat" data-cat="search"><span class="ico"><svg viewBox="0 0 24 24"><path d="M10 2a8 8 0 1 0 4.9 14.3l5.4 5.4 1.4-1.4-5.4-5.4A8 8 0 0 0 10 2zm0 2a6 6 0 1 1 0 12 6 6 0 0 1 0-12z"/></svg></span>بحث</button>
+  </div>
 </div>
 
+<div id="normalPage"><div class="grid" id="channelsGrid"></div></div>
+
+<div id="searchPage">
+  <input type="text" id="searchInput" placeholder="ابحث عن فيديو...">
+  <div class="grid" id="searchGrid" style="margin-top:12px;"></div>
+  <div id="searchEmpty">اكتب كلمة للبحث...</div>
+</div>
+
+<div id="satPage">
+  <div id="satContent">
+    <div id="satPlayer">
+      <div class="video-wrap" id="satVideoWrap"><video id="satVideoEl" controls autoplay playsinline></video></div>
+      <div class="player-controls">
+        <button id="satPrimaryPlayerBtn" class="player-switch active" type="button">المشغل الرئيسي</button>
+        <button id="satBackupPlayerBtn" class="player-switch" type="button">المشغل الاحتياطي</button>
+        <button id="satRetryKidsBtn" class="retry-switch" type="button" hidden>↻</button>
+        <select id="satEngineSelect">
+          <option value="auto">تلقائي</option>
+          <option value="videojs">Video.js</option>
+          <option value="hlsjs">HLS.js</option>
+          <option value="dplayer">DPlayer</option>
+          <option value="clappr">Clappr</option>
+          <option value="native">المشغل الأصلي</option>
+        </select>
+        <div id="satLinkButtons"></div>
+        <div class="quality-menu">
+          <button id="satQualityToggle" class="quality-toggle" type="button">⚙ الجودة</button>
+          <div id="satQualityOptions" class="quality-options"></div>
+        </div>
+      </div>
+      <div id="satMsg"></div>
+    </div>
+    <div class="grid-sat" id="satGrid"></div>
+    <textarea id="satData" style="display:none">
+سبيس ستون
+https://www.appcreator24.com/srv/imgs/seccs/37498762_ico.png?ts=1790091790
+https://shd-gcp-live.edgenextcdn.net/live/bitmovin-spacetoon/d8382fb9ab4b2307058f12c7ea90db54/index.m3u8
+قناة ماجد
+https://www.appcreator24.com/srv/imgs/seccs/37498769_ico.png?ts=1790091857
+https://admn-live-cdn-lb.starzplayarabia.com/out/v1/admn_tv_enc/majid/majid_hls_nd/index.m3u8
+أفران باخجة
+https://www.appcreator24.com/srv/imgs/seccs/37498774_ico.png?ts=1790091890
+https://5dcabf026b188.streamlock.net/afarinTV/livestream/playlist.m3u8
+أفران
+https://www.appcreator24.com/srv/imgs/seccs/37498781_ico.png?ts=1790091929
+https://65f16f0fdfc51.streamlock.net/afarinTV/livestream/playlist.m3u8
+اطفال ومواهب
+https://www.appcreator24.com/srv/imgs/seccs/37498783_ico.png?ts=1790091968
+https://5d658d7e9f562.streamlock.net/atfal1.com/atfal2/playlist.m3u8
+اطفال مرايا
+https://www.appcreator24.com/srv/imgs/seccs/37498795_ico.png?ts=1790091999
+https://live.kwikmotion.com/smckidslive/tjkids1.smil/playlist.m3u8
+شاهد انيمي
+https://www.appcreator24.com/srv/imgs/seccs/37498802_ico.png?ts=1790092071
+https://mbc1-enc.edgenextcdn.net/out/v1/e7350ddf46c94dddafe14b099394ff56/index.m3u8
+MBC 3
+https://www.appcreator24.com/srv/imgs/seccs/37498808_ico.png?ts=1790092101
+https://shd-gcp-live.edgenextcdn.net/live/bitmovin-mbc-3-usa/5d58265a862a476dc7f97694addb5ded/index.m3u8
+رؤيا أطفال
+https://www.appcreator24.com/srv/imgs/seccs/37498809_ico.png?ts=1790092131
+https://playlist.fasttvcdn.com/pl/ptllxjd03j6g9oxxjdfapg/roya-kids/playlist/1.m3u8
+روتانا أطفال
+https://www.appcreator24.com/srv/imgs/seccs/37498814_ico.png?ts=1790092155
+https://h1001.hibridcdn.net/rotana/kids_2X9by3GFdMqYr8zK/playlist.m3u8
+koogi
+https://www.appcreator24.com/srv/imgs/seccs/37498818_ico.png?ts=1790092181
+http://media6.smc-host.com:1935/koogi.tv/koogi.smil/playlist.m3u8
+عمو نعال
+https://www.appcreator24.com/srv/imgs/seccs/37498829_ico.png?ts=1790092242
+http://mkstream.servehttp.com:1940/AmouYazid/ay1/playlist.m3u8
+فورتين أطفال
+https://www.appcreator24.com/srv/imgs/seccs/37499176_ico.png?ts=1790092268
+http://ch14.tv/live/ch4teenkids/playlist.m3u8
+جيم للأطفال
+https://www.appcreator24.com/srv/imgs/seccs/37809305_ico.png?ts=1790092296
+https://w.shahidtv.net/live/34682514/73347194/62.m3u8
+    </textarea>
+  </div>
+</div>
+
+<div id="kidsGamesPage">
+  <iframe id="kidsGamesFrame" src="about:blank" allow="autoplay; encrypted-media; fullscreen; gamepad; xr-spatial-tracking" allowfullscreen></iframe>
+</div>
+
+<div id="playerPage">
+  <div class="player-top">
+    <img id="ytPoster">
+    <iframe id="youtubeFrame" allow="autoplay; encrypted-media" allowfullscreen></iframe>
+    <button class="close-btn" id="closeBtn">✕</button>
+  </div>
+  <div class="related">
+    <h3>فيديوهات أخرى</h3>
+    <div class="related-scroll" id="relatedScroll"></div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/hls.js@1"></script>
+<script src="https://cdn.jsdelivr.net/npm/dashjs@4/dist/dash.all.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/shaka-player@4/dist/shaka-player.compiled.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/flv.js@1/dist/flv.min.js"></script>
+<script src="https://vjs.zencdn.net/8.10.0/video.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/dplayer@latest/dist/DPlayer.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/clappr@latest/dist/clappr.min.js"></script>
+
+<script>
+/* روابط البث المباشر: سطر اسم، ثم سطر رابط */
+const liveData = `
+غامبول الموسم الجديد
+https://www.youtube.com/watch?v=IT1IZpY7uzA
+ماشا والدب
+https://www.youtube.com/watch?v=S_6wjcgw1mk
+لولو وناسة
+https://www.youtube.com/watch?v=HoX-sU9hDV8
+أغاني جديدة
+https://www.youtube.com/watch?v=JQ7mRtfj02I
+تيغ وليو
+https://www.youtube.com/watch?v=-BaC2_cmAiU
+عيد ميلادي
+https://www.youtube.com/watch?v=OzAZIsAyzk0
+سجن الهاتف المحمول
+https://www.youtube.com/watch?v=zoMjGCG5dnA
+تحدي الطائرة
+https://www.youtube.com/watch?v=XcUp-tb9bJM
+روزي وأصدقاؤها
+https://www.youtube.com/watch?v=-YiFym-tpQQ
+قناة أسرتنا مباشر
+https://www.youtube.com/watch?v=JQ7mRtfj02I
+أبطال التايتنز، انطلقوا!
+https://www.youtube.com/watch?v=21hAlnDFTLw
+نقيب لابرادور
+https://www.youtube.com/watch?v=AmHD0lbMRWk
+Tom & Jerry
+https://www.youtube.com/watch?v=rEKifG2XUZg
+Tom & Jerry
+https://www.youtube.com/watch?v=_XeGYNTiuSM
+Tom & Jerry
+https://www.youtube.com/watch?v=400k2SKoeh4
+Mini Moments
+https://www.youtube.com/watch?v=btP-bWKDVik
+Adventure Time
+https://www.youtube.com/watch?v=uZkaJ3e9nfY
+Mr Bean 
+https://www.youtube.com/watch?v=kRL8tyCl1lQ
+Mr Bean 
+https://www.youtube.com/watch?v=yOxRjvGkYlc
+shaun the Sheep
+https://www.youtube.com/watch?v=iMzH7R-OJ9E
+shaun the Sheep
+https://www.youtube.com/watch?v=yH28BYhTIYo
+World of Gumball
+https://www.youtube.com/watch?v=nIyaCRNwxhU
+
+`;
+
+/* روابط الفيديوهات: سطر اسم، ثم سطر رابط */
+const videosData = `
+Tom & Jerry
+https://www.youtube.com/watch?v=rEKifG2XUZg
+Tom & Jerry
+https://www.youtube.com/watch?v=_XeGYNTiuSM
+Tom & Jerry
+https://www.youtube.com/watch?v=400k2SKoeh4
+Mini Moments
+https://www.youtube.com/watch?v=btP-bWKDVik
+Adventure Time
+https://www.youtube.com/watch?v=uZkaJ3e9nfY
+Mr Bean 
+https://www.youtube.com/watch?v=kRL8tyCl1lQ
+Mr Bean 
+https://www.youtube.com/watch?v=yOxRjvGkYlc
+shaun the Sheep
+https://www.youtube.com/watch?v=iMzH7R-OJ9E
+shaun the Sheep
+https://www.youtube.com/watch?v=yH28BYhTIYo
+World of Gumball
+https://www.youtube.com/watch?v=nIyaCRNwxhU
+غامبول الموسم الجديد
+https://www.youtube.com/watch?v=IT1IZpY7uzA
+ماشا والدب
+https://www.youtube.com/watch?v=S_6wjcgw1mk
+لولو وناسة
+https://www.youtube.com/watch?v=HoX-sU9hDV8
+أغاني جديدة
+https://www.youtube.com/watch?v=JQ7mRtfj02I
+تيغ وليو
+https://www.youtube.com/watch?v=-BaC2_cmAiU
+عيد ميلادي
+https://www.youtube.com/watch?v=OzAZIsAyzk0
+سجن الهاتف المحمول
+https://www.youtube.com/watch?v=zoMjGCG5dnA
+تحدي الطائرة
+https://www.youtube.com/watch?v=XcUp-tb9bJM
+روزي وأصدقاؤها
+https://www.youtube.com/watch?v=-YiFym-tpQQ
+قناة أسرتنا مباشر
+https://www.youtube.com/watch?v=JQ7mRtfj02I
+أبطال التايتنز، انطلقوا!
+https://www.youtube.com/watch?v=21hAlnDFTLw
+نقيب لابرادور
+https://www.youtube.com/watch?v=AmHD0lbMRWk
+`;
+
+const grid=document.getElementById("channelsGrid"),playerPage=document.getElementById("playerPage"),youtubeFrame=document.getElementById("youtubeFrame"),ytPoster=document.getElementById("ytPoster"),relatedScroll=document.getElementById("relatedScroll"),closeBtn=document.getElementById("closeBtn"),catsBar=document.getElementById("catsBar"),normalPage=document.getElementById("normalPage"),satPage=document.getElementById("satPage"),kidsGamesPage=document.getElementById("kidsGamesPage"),kidsGamesFrame=document.getElementById("kidsGamesFrame"),searchPage=document.getElementById("searchPage"),searchInput=document.getElementById("searchInput"),searchGrid=document.getElementById("searchGrid"),searchEmpty=document.getElementById("searchEmpty");
+
+function getYouTubeId(url){
+  if(!url)return null;
+  try{
+    url=url.trim();
+    const parsed=new URL(url);
+    const host=parsed.hostname.toLowerCase().replace(/^www\./,'');
+    let id=null;
+    const isYT=host==='youtube.com'||host==='m.youtube.com'||host.endsWith('.youtube.com')||host==='youtube-nocookie.com'||host.endsWith('.youtube-nocookie.com');
+    if(host==='youtu.be'){id=parsed.pathname.split('/').filter(Boolean)[0];}
+    else if(isYT){
+      id=parsed.searchParams.get('v');
+      if(!id){const m=parsed.pathname.match(/^\/(?:embed|live|shorts|v)\/([^\/?#]+)/);id=m?m[1]:null;}
+    }
+    if(!id)return null;
+    id=id.split(/[?&#]/)[0];
+    return /^[A-Za-z0-9_-]{11}$/.test(id)?id:null;
+  }catch(e){return null;}
+}
+
+function parseData(data){
+  const lines=data.trim().split('\n').filter(l=>l.trim()!=='');
+  const list=[];
+  for(let i=0;i<lines.length;i+=2){
+    const title=lines[i]?.trim(),url=lines[i+1]?.trim(),id=getYouTubeId(url);
+    if(title&&id)list.push({title,id});
+  }
+  return list;
+}
+
+const categories={live:parseData(liveData),videos:parseData(videosData)};
+const allYouTubeVideos=[...categories.live.map(v=>({...v,cat:'live'})),...categories.videos.map(v=>({...v,cat:'videos'}))];
+let activeCat='all',currentVideos=[];
+
+function shuffle(arr){const a=arr.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
+
+function getVideosForCat(cat){
+  if(cat==='all')return shuffle([...categories.live,...categories.videos]);
+  return categories[cat]?categories[cat].slice():[];
+}
+
+function renderGrid(){
+  grid.innerHTML='';
+  currentVideos.forEach((v,index)=>{
+    const card=document.createElement('button');
+    card.className='card';
+    card.innerHTML=`<div class="thumb-wrap"><img src="https://i.ytimg.com/vi/${v.id}/hqdefault.jpg" alt="${v.title}"><span class="duration">--:--</span></div><div class="card-title">${v.title}</div>`;
+    card.onclick=()=>openPlayer(currentVideos,index,true);
+    grid.appendChild(card);
+  });
+}
+
+function hideAllPages(){
+  normalPage.style.display='none';
+  satPage.classList.remove('active');
+  satPage.style.display='none';
+  kidsGamesPage.style.display='none';
+  searchPage.style.display='none';
+}
+
+function setCategory(cat){
+  activeCat=cat;
+  [...catsBar.querySelectorAll('.cat')].forEach(btn=>{btn.classList.toggle('active',btn.dataset.cat===cat);});
+  hideAllPages();
+  if(cat==='sat'){satPage.classList.add('active');satPage.style.display='block';window.scrollTo({top:0,behavior:'auto'});return;}
+  if(cat==='kidsgames'){kidsGamesPage.style.display='block';if(kidsGamesFrame.src==='about:blank'){kidsGamesFrame.src='https://www.crazygames.com';}window.scrollTo({top:0,behavior:'auto'});return;}
+  if(cat==='search'){searchPage.style.display='block';searchInput.value='';searchGrid.innerHTML='';searchEmpty.style.display='block';searchEmpty.textContent='اكتب كلمة للبحث...';window.scrollTo({top:0,behavior:'auto'});setTimeout(()=>searchInput.focus(),100);return;}
+  normalPage.style.display='block';
+  currentVideos=getVideosForCat(cat);
+  renderGrid();
+  window.scrollTo({top:0,behavior:'auto'});
+}
+
+catsBar.querySelectorAll('.cat').forEach(btn=>{btn.onclick=()=>setCategory(btn.dataset.cat);});
+
+searchInput.addEventListener('input',()=>{
+  const q=searchInput.value.trim().toLowerCase();
+  searchGrid.innerHTML='';
+  if(!q){searchEmpty.style.display='block';searchEmpty.textContent='اكتب كلمة للبحث...';return;}
+  const results=allYouTubeVideos.filter(v=>v.title.toLowerCase().includes(q));
+  if(results.length===0){searchEmpty.style.display='block';searchEmpty.textContent='لا توجد نتائج مطابقة.';return;}
+  searchEmpty.style.display='none';
+  results.forEach((v,index)=>{
+    const card=document.createElement('button');
+    card.className='card';
+    card.innerHTML=`<div class="thumb-wrap"><img src="https://i.ytimg.com/vi/${v.id}/hqdefault.jpg" alt="${v.title}"><span class="duration">--:--</span></div><div class="card-title">${v.title}</div>`;
+    card.onclick=()=>{
+      const catVideos=getVideosForCat(v.cat);
+      const realIndex=catVideos.findIndex(cv=>cv.id===v.id);
+      openPlayer(catVideos,realIndex>=0?realIndex:index,true);
+    };
+    searchGrid.appendChild(card);
+  });
+});
+
+let playerOpen=false;
+function stopPlayback(){youtubeFrame.onload=null;youtubeFrame.src='about:blank';ytPoster.removeAttribute('src');ytPoster.style.display='none';}
+
+function openPlayer(videosList,index,pushHistory){
+  const v=videosList[index];
+  if(!v)return;
+  ytPoster.src=`https://i.ytimg.com/vi/${v.id}/hqdefault.jpg`;
+  ytPoster.style.display='block';
+  youtubeFrame.src=`https://www.youtube.com/embed/${v.id}?autoplay=1&rel=0&modestbranding=1&iv_load_policy=3&playsinline=1`;
+  youtubeFrame.onload=()=>{ytPoster.style.display='none';};
+  relatedScroll.innerHTML='';
+  videosList.forEach((rv,ri)=>{
+    if(ri===index)return;
+    const rc=document.createElement('button');
+    rc.className='related-card';
+    rc.innerHTML=`<div class="related-thumb"><img src="https://i.ytimg.com/vi/${rv.id}/hqdefault.jpg" alt="${rv.title}"></div><div class="related-title">${rv.title}</div>`;
+    rc.onclick=()=>openPlayer(videosList,ri,false);
+    relatedScroll.appendChild(rc);
+  });
+  playerPage.style.display='block';
+  playerPage.scrollTop=0;
+  playerOpen=true;
+  setTimeout(()=>{
+    let targetIndex=0,count=0;
+    for(let i=0;i<videosList.length;i++){if(i===index){targetIndex=count;break;}count++;}
+    const target=relatedScroll.children[targetIndex];
+    if(target){const offset=target.offsetLeft-relatedScroll.offsetLeft-12;relatedScroll.scrollTo({left:offset,behavior:'auto'});}
+  },50);
+  if(pushHistory){try{history.pushState({view:'player',index},'','#play='+index);}catch(e){}}
+}
+
+let isDown=false,startX,scrollLeft;
+relatedScroll.addEventListener('mousedown',e=>{isDown=true;relatedScroll.classList.add('dragging');startX=e.pageX-relatedScroll.offsetLeft;scrollLeft=relatedScroll.scrollLeft;});
+relatedScroll.addEventListener('mouseleave',()=>{isDown=false;relatedScroll.classList.remove('dragging');});
+relatedScroll.addEventListener('mouseup',()=>{isDown=false;relatedScroll.classList.remove('dragging');});
+relatedScroll.addEventListener('mousemove',e=>{if(!isDown)return;e.preventDefault();const x=e.pageX-relatedScroll.offsetLeft;const walk=(x-startX)*1.5;relatedScroll.scrollLeft=scrollLeft-walk;});
+closeBtn.onclick=()=>{playerPage.style.display='none';stopPlayback();playerOpen=false;};
+document.addEventListener('keydown',e=>{if(e.key==='Escape'&&playerOpen){playerPage.style.display='none';stopPlayback();playerOpen=false;}});
+window.addEventListener('pagehide',stopPlayback);
+window.addEventListener('beforeunload',stopPlayback);
+
+/* ===== القنوات الفضائية ===== */
+var satVideoEl=document.getElementById('satVideoEl'),satWrapEl=document.getElementById('satVideoWrap'),satGridEl=document.getElementById('satGrid'),satMsgEl=document.getElementById('satMsg'),satRetryKidsBtn=document.getElementById('satRetryKidsBtn');
+
+function satBuildCards(){
+  var lines=document.getElementById('satData').value.split('\n').map(function(l){return l.trim();}).filter(function(l){return l.length>0;});
+  satGridEl.innerHTML='';
+  for(var i=0;i+2<lines.length;i+=3){
+    (function(name,image,video){
+      var a=document.createElement('a');
+      a.href='#';a.className='card-sat';
+      var img=document.createElement('img');img.src=image;img.alt=name;
+      var title=document.createElement('div');title.className='card-title-sat';title.textContent=name;
+      a.appendChild(img);a.appendChild(title);
+      a.addEventListener('click',function(e){e.preventDefault();if(!video)return;satGridEl.style.display='none';document.getElementById('satPlayer').style.display='block';satPlayVideo(video);});
+      satGridEl.appendChild(a);
+    })(lines[i],lines[i+1],lines[i+2]);
+  }
+}
+
+function satShowMsg(text){satMsgEl.textContent=text;satMsgEl.style.display='block';satRetryKidsBtn.hidden=!/^⚠/.test(text);}
+function satHideMsg(){satMsgEl.style.display='none';satMsgEl.textContent='';satRetryKidsBtn.hidden=true;}
+
+satRetryKidsBtn.addEventListener('click',function(){satFallbackCycle=0;if(!satActiveUrl)return;if(satKidsPlayerMode==='backup'){satPlayBackupVideo(satActiveUrl);}else{satPlayVideo(satActiveUrl);}});
+
+function satShowIframe(src){satVideoEl.style.display='none';var iframe=document.createElement('iframe');iframe.src=src;iframe.allow='autoplay; encrypted-media; picture-in-picture; fullscreen';iframe.allowFullscreen=true;satWrapEl.appendChild(iframe);}
+
+function satToYouTubeEmbed(url){var m;if((m=url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/|youtube\.com\/live\/|youtube\.com\/shorts\/)([A-Za-z0-9_-]{11})/))){return 'https://www.youtube.com/embed/'+m[1]+'?autoplay=1&rel=0';}return null;}
+function satToVimeoEmbed(url){var m=url.match(/vimeo\.com\/(?:video\/)?(\d+)/);if(m)return 'https://player.vimeo.com/video/'+m[1]+'?autoplay=1';return null;}
+function satToFacebookEmbed(url){return 'https://www.facebook.com/plugins/video.php?href='+encodeURIComponent(url)+'&autoplay=1';}
+function satToDailymotionEmbed(url){var m=url.match(/dailymotion\.com\/video\/([A-Za-z0-9]+)/);if(m)return 'https://www.dailymotion.com/embed/video/'+m[1]+'?autoplay=1';return null;}
+function satToTwitchEmbed(url){var m=url.match(/twitch\.tv\/([A-Za-z0-9_]+)/);if(m)return 'https://player.twitch.tv/?channel='+m[1]+'&parent='+location.hostname+'&autoplay=true';return null;}
+function satToStreamableEmbed(url){var m=url.match(/streamable\.com\/([A-Za-z0-9]+)/);if(m)return 'https://streamable.com/e/'+m[1]+'?autoplay=1';return null;}
+function satToTwitterEmbed(url){if(/twitter\.com|x\.com/.test(url))return 'https://twitframe.com/show?url='+encodeURIComponent(url);return null;}
+function satToOkEmbed(url){var m=url.match(/ok\.ru\/video\/(\d+)/);if(m)return 'https://ok.ru/videoembed/'+m[1]+'?autoplay=1';return null;}
+function satToVkEmbed(url){var m=url.match(/vk\.com\/video(-?\d+)_(\d+)/);if(m)return 'https://vk.com/video_ext.php?oid='+m[1]+'&id='+m[2]+'&autoplay=1';return null;}
+function satToRumbleEmbed(url){var m=url.match(/rumble\.com\/(?:embed\/)?([A-Za-z0-9]+)/);if(m)return 'https://rumble.com/embed/'+m[1]+'/';return null;}
+function satToBitchuteEmbed(url){var m=url.match(/bitchute\.com\/video\/([A-Za-z0-9]+)/);if(m)return 'https://www.bitchute.com/embed/'+m[1]+'/';return null;}
+function satToOdyseeEmbed(url){var m=url.match(/odysee\.com\/.*[:/]([A-Za-z0-9]+)/);if(m)return 'https://odysee.com/$/embed/'+m[1];return null;}
+function satToArchiveEmbed(url){var m=url.match(/archive\.org\/details\/([^\/\?]+)/);if(m)return 'https://archive.org/embed/'+m[1];return null;}
+function satToMp4UploadEmbed(url){var m=url.match(/mp4upload\.com\/(?:embed-)?([A-Za-z0-9]+)/);if(m)return 'https://www.mp4upload.com/embed-'+m[1]+'.html';return null;}
+function satToDoodEmbed(url){var m=url.match(/dood(?:stream|\.)?\.?(?:com|to|so|pm|watch|sh|re|la|ws|gs|life|yt|li|si|cf|wtf|best|cx|nu|vip)\/(?:e|d)\/([A-Za-z0-9]+)/i);if(m)return 'https://dood.to/e/'+m[1];return null;}
+function satToGenericIframe(url){return url;}
+
+function satIsHls(url){return /\.m3u8(\?.*)?$/i.test(url)||/format=m3u8/i.test(url);}
+function satIsDash(url){return /\.mpd(\?.*)?$/i.test(url)||/format=mpd/i.test(url);}
+function satIsFlv(url){return /\.flv(\?.*)?$/i.test(url);}
+function satIsMkv(url){return /\.mkv(\?.*)?$/i.test(url);}
+function satIsTs(url){return /\.ts(\?.*)?$/i.test(url);}
+function satIsDirectVideo(url){return /\.(mp4|webm|ogg|ogv|mov|m4v|3gp|m4s|mp3|aac|m4a)(\?.*)?$/i.test(url);}
+function satIsRtmp(url){return /^rtmp:\/\//i.test(url);}
+function satIsRtsp(url){return /^rtsp:\/\//i.test(url);}
+
+var satActiveEngine='native',satActiveUrl='',satKidsPlayerMode='primary',satFallbackCycle=0,satActiveHls=null,satActiveShaka=null,satActiveVideoJs=null,satActiveDplayer=null,satActiveClappr=null,satEngineTimer=null,satEngineToken=0,satQualitySources=[],satQualityIndex=0;
+
+function satSetKidsPlayerMode(mode){
+  satKidsPlayerMode=mode;
+  var engineSelect=document.getElementById('satEngineSelect'),qualityMenu=document.querySelector('#satPlayer .quality-menu'),primaryButton=document.getElementById('satPrimaryPlayerBtn'),backupButton=document.getElementById('satBackupPlayerBtn');
+  if(engineSelect)engineSelect.style.display=mode==='primary'?'':'none';
+  if(qualityMenu)qualityMenu.style.display=mode==='primary'?'':'none';
+  if(primaryButton)primaryButton.classList.toggle('active',mode==='primary');
+  if(backupButton)backupButton.classList.toggle('active',mode==='backup');
+}
+
+function satStopKidsMedia(){
+  document.querySelectorAll('#satContent audio, #satContent video').forEach(function(media){try{media.pause();media.muted=true;media.volume=0;media.removeAttribute('src');media.load();}catch(e){}});
+  document.querySelectorAll('#satVideoWrap iframe').forEach(function(frame){frame.remove();});
+}
+
+function satResetPlayers(){
+  satEngineToken++;
+  if(satEngineTimer){clearTimeout(satEngineTimer);satEngineTimer=null;}
+  satStopKidsMedia();
+  try{if(satActiveHls)satActiveHls.destroy();}catch(e){}
+  try{if(satActiveShaka)satActiveShaka.destroy();}catch(e){}
+  try{if(satActiveVideoJs)satActiveVideoJs.dispose();}catch(e){}
+  try{if(satActiveDplayer)satActiveDplayer.destroy();}catch(e){}
+  try{if(satActiveClappr)satActiveClappr.destroy();}catch(e){}
+  satActiveHls=null;satActiveVideoJs=null;satActiveDplayer=null;satActiveClappr=null;satActiveShaka=null;
+  satWrapEl.querySelectorAll('[data-player-host]').forEach(function(host){host.remove();});
+  satVideoEl.style.display='block';satVideoEl.controls=true;
+  satQualitySources=[];satQualityIndex=0;
+  document.getElementById('satQualityToggle').style.display='none';
+  document.getElementById('satQualityOptions').innerHTML='';
+  document.getElementById('satQualityOptions').classList.remove('open');
+  satHideMsg();
+}
+
+function satQualityLabel(level,index){
+  var name=level.name||(level.attrs&&level.attrs.NAME)||(level.attributes&&level.attributes.NAME);
+  if(name)return String(name);
+  if(level.height)return level.height+'p';
+  if(level.bitrate)return Math.round(level.bitrate/1000)+'kbps';
+  return 'جودة '+(index+1);
+}
+
+function satShowQualities(hls,token){
+  var levels=hls.levels||[];
+  if(token!==satEngineToken||levels.length<2)return;
+  satQualitySources=levels.map(function(level,index){return {label:satQualityLabel(level,index),index:index};});
+  var toggle=document.getElementById('satQualityToggle'),options=document.getElementById('satQualityOptions');
+  toggle.style.display='inline-block';options.innerHTML='';
+  satQualitySources.forEach(function(source,index){
+    var button=document.createElement('button');button.type='button';button.textContent=source.label;
+    button.onclick=function(){satQualityIndex=index;hls.currentLevel=source.index;options.classList.remove('open');};
+    options.appendChild(button);
+  });
+}
+
+function satCreateHost(id){
+  var host=document.createElement('div');host.id=id;host.dataset.playerHost='true';
+  host.style.cssText='position:absolute;inset:0;width:100%;height:100%;background:#000;';
+  satWrapEl.appendChild(host);return host;
+}
+
+function satPlayWithEngine(url,engine,token,failed){
+  satActiveEngine=engine;
+  satVideoEl.style.display=engine==='native'||engine==='videojs'||engine==='hlsjs'?'block':'none';
+  try{
+    if(engine==='videojs'&&window.videojs){
+      satActiveVideoJs=videojs(satVideoEl,{autoplay:true,controls:true,responsive:true,fluid:false});
+      satActiveVideoJs.src({src:url,type:'application/x-mpegURL'});
+      satActiveVideoJs.on('playing',function(){if(token===satEngineToken)satFinishKidsEngine(token);});
+      satActiveVideoJs.on('error',function(){if(token===satEngineToken)failed();});
+      satActiveVideoJs.play().catch(function(){});
+      return;
+    }
+    if(engine==='hlsjs'&&window.Hls&&Hls.isSupported()){
+      satActiveHls=new Hls();
+      satActiveHls.loadSource(url);
+      satActiveHls.attachMedia(satVideoEl);
+      satActiveHls.on(Hls.Events.MANIFEST_PARSED,function(){satShowQualities(satActiveHls,token);satVideoEl.play().catch(function(){});});
+      satActiveHls.on(Hls.Events.FRAG_LOADED,function(){if(token===satEngineToken)satFinishKidsEngine(token);});
+      satActiveHls.on(Hls.Events.ERROR,function(event,data){if(data&&data.fatal&&token===satEngineToken)failed();});
+      return;
+    }
+    if(engine==='shaka'&&window.shaka&&shaka.Player.isBrowserSupported()){
+      satActiveShaka=new shaka.Player(satVideoEl);
+      satActiveShaka.load(url).then(function(){satVideoEl.play().then(function(){if(token===satEngineToken)satFinishKidsEngine(token);}).catch(function(){if(token===satEngineToken)failed();});}).catch(function(){if(token===satEngineToken)failed();});
+      return;
+    }
+    if(engine==='dplayer'&&window.DPlayer){
+      var dHost=satCreateHost('sat-dplayer-host');
+      satActiveDplayer=new DPlayer({container:dHost,autoplay:true,video:{url:url,type:'hls'}});
+      satActiveDplayer.on('playing',function(){if(token===satEngineToken)satFinishKidsEngine(token);});
+      satActiveDplayer.on('error',function(){if(token===satEngineToken)failed();});
+      return;
+    }
+    if(engine==='clappr'&&window.Clappr){
+      var cHost=satCreateHost('sat-clappr-host');
+      satActiveClappr=new Clappr.Player({source:url,parentId:'#'+cHost.id,autoPlay:true,mute:false});
+      satActiveClappr.on(Clappr.Events.PLAYER_READY,function(){if(token===satEngineToken)satFinishKidsEngine(token);});
+      satActiveClappr.on(Clappr.Events.PLAYER_ERROR,function(){if(token===satEngineToken)failed();});
+      return;
+    }
+    if(engine==='native'){
+      satVideoEl.src=url;
+      satVideoEl.onplaying=function(){if(token===satEngineToken)satFinishKidsEngine(token);};
+      satVideoEl.onerror=function(){if(token===satEngineToken)failed();};
+      satVideoEl.play().catch(function(){});
+      return;
+    }
+  }catch(e){failed();}
+  failed();
+}
+
+function satFinishKidsEngine(token){if(token!==satEngineToken)return;if(satEngineTimer){clearTimeout(satEngineTimer);satEngineTimer=null;}}
+
+function satPlayVideo(url,automatic){
+  satResetPlayers();satActiveUrl=url;
+  if(!automatic)satFallbackCycle=0;
+  satSetKidsPlayerMode('primary');satHideMsg();
+  var token=satEngineToken;
+  var selected=document.getElementById('satEngineSelect').value;
+  var engines=selected==='auto'?['hlsjs','native','shaka']:[selected,'hlsjs','native','shaka'];
+  var index=0;
+  function next(){
+    if(token!==satEngineToken)return;
+    if(index>=engines.length){
+      if(satFallbackCycle===0){
+        satFallbackCycle=1;satShowMsg('⚠ تعذر التشغيل، جاري الانتقال للمشغل الاحتياطي...');
+        setTimeout(function(){if(token===satEngineToken&&satActiveUrl===url)satPlayBackupVideo(url);},500);
+      }else{satShowMsg('⚠ تعذر تشغيل رابط البث بالمشغلين المتاحين.');}
+      return;
+    }
+    var engine=engines[index++];
+    satResetPlayersForEngine();
+    satPlayWithEngine(url,engine,token,next);
+    satEngineTimer=setTimeout(function(){if(token===satEngineToken)next();},6000);
+  }
+  next();
+}
+
+function satPlayBackupVideo(url){
+  satResetPlayers();satActiveUrl=url;satSetKidsPlayerMode('backup');satHideMsg();
+  if(!window.shaka||!shaka.Player.isBrowserSupported()){satShowMsg('⚠ المشغل الاحتياطي غير مدعوم في هذا المتصفح.');return;}
+  try{
+    satActiveShaka=new shaka.Player(satVideoEl);
+    satActiveShaka.load(url).then(function(){satVideoEl.play().catch(function(){});}).catch(function(){
+      satShowMsg('⚠ فشل المشغل الاحتياطي، جاري الرجوع للمشغل الرئيسي...');
+      setTimeout(function(){if(satActiveUrl===url&&satKidsPlayerMode==='backup')satPlayVideo(url,true);},1000);
+    });
+  }catch(e){satShowMsg('⚠ تعذر تشغيل المشغل الاحتياطي.');}
+}
+
+function satResetPlayersForEngine(){
+  if(satEngineTimer){clearTimeout(satEngineTimer);satEngineTimer=null;}
+  try{if(satActiveHls)satActiveHls.destroy();}catch(e){}
+  try{if(satActiveShaka)satActiveShaka.destroy();}catch(e){}
+  try{if(satActiveVideoJs)satActiveVideoJs.dispose();}catch(e){}
+  try{if(satActiveDplayer)satActiveDplayer.destroy();}catch(e){}
+  try{if(satActiveClappr)satActiveClappr.destroy();}catch(e){}
+  satActiveHls=null;satActiveShaka=null;satActiveVideoJs=null;satActiveDplayer=null;satActiveClappr=null;
+  satWrapEl.querySelectorAll('[data-player-host]').forEach(function(host){host.remove();});
+  satVideoEl.pause();satVideoEl.removeAttribute('src');satVideoEl.load();satVideoEl.style.display='block';
+  satEnsureKidsVideo();
+}
+
+function satEnsureKidsVideo(){
+  if(satWrapEl.contains(satVideoEl))return;
+  satVideoEl=document.createElement('video');satVideoEl.id='satVideoEl';satVideoEl.controls=true;satVideoEl.autoplay=true;satVideoEl.playsInline=true;
+  satWrapEl.insertBefore(satVideoEl,satWrapEl.firstChild);
+}
+
+document.getElementById('satQualityToggle').onclick=function(event){event.stopPropagation();document.getElementById('satQualityOptions').classList.toggle('open');};
+document.getElementById('satEngineSelect').onchange=function(){if(satActiveUrl)satPlayVideo(satActiveUrl);};
+document.getElementById('satPrimaryPlayerBtn').onclick=function(){satSetKidsPlayerMode('primary');if(satActiveUrl)satPlayVideo(satActiveUrl);};
+document.getElementById('satBackupPlayerBtn').onclick=function(){satSetKidsPlayerMode('backup');if(satActiveUrl)satPlayBackupVideo(satActiveUrl);};
+document.addEventListener('click',function(event){if(!event.target.closest('#satPlayer .quality-menu'))document.getElementById('satQualityOptions').classList.remove('open');});
+window.addEventListener('pagehide',function(){satResetPlayers();});
+window.addEventListener('beforeunload',function(){satResetPlayers();});
+document.addEventListener('visibilitychange',function(){if(document.visibilityState==='hidden')satResetPlayers();});
+
+satBuildCards();
+setCategory('all');
+</script>
 </body>
 </html>

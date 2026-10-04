@@ -17,7 +17,9 @@
 <script>
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', function () {
-    navigator.serviceWorker.register('./sw.js').catch(function () {});
+    navigator.serviceWorker.register('./sw.js').then(function (registration) {
+      return registration.update();
+    }).catch(function () {});
   });
 }
 (function(){
@@ -707,9 +709,19 @@ function safeExternalUrl(value){
   try{var url=new URL(String(value||''));return url.protocol==='https:'||url.protocol==='http:'?url.href:'';}catch(e){return '';}
 }
 
-function recordsFromRealtimeSnapshot(snapshot){
-  var values=snapshot.val()||{};
+function recordsFromRealtimeData(values){
+  values=values||{};
   return Object.keys(values).map(function(id){return {id:id,data:values[id]||{}};});
+}
+
+function recordsFromRealtimeSnapshot(snapshot){return recordsFromRealtimeData(snapshot.val());}
+
+function fetchRealtimeRecords(path){
+  var base=String(window.KIDS_TV_FIREBASE_CONFIG.databaseURL||'').replace(/\/+$/,'');
+  return fetch(base+'/'+path+'.json',{cache:'no-store'}).then(function(response){
+    if(!response.ok)throw new Error('HTTP '+response.status);
+    return response.json();
+  }).then(recordsFromRealtimeData);
 }
 
 function renderPublishedCategories(){
@@ -754,7 +766,12 @@ function applyPublishedContent(){
 
 function initPublishedContent(){
   try{
-    if(!isFirebaseConfigured()||!window.firebase||!firebase.database)return;
+    if(!isFirebaseConfigured())return;
+    Promise.all([
+      fetchRealtimeRecords('categories').then(function(records){publishedCategoryDocs=records;publishedCategoryDocs.sort(function(a,b){return (Number(a.data.createdAt)||0)-(Number(b.data.createdAt)||0);});}).catch(function(error){console.warn('تعذر جلب التصنيفات مبدئيًا',error);}),
+      fetchRealtimeRecords('videos').then(function(records){publishedVideoDocs=records;}).catch(function(error){console.warn('تعذر جلب الفيديوهات مبدئيًا',error);})
+    ]).then(applyPublishedContent);
+    if(!window.firebase||!firebase.database)return;
     if(!firebase.apps.length)firebase.initializeApp(window.KIDS_TV_FIREBASE_CONFIG);
     var db=firebase.database();
     db.ref('categories').on('value',function(snapshot){publishedCategoryDocs=recordsFromRealtimeSnapshot(snapshot);publishedCategoryDocs.sort(function(a,b){return (Number(a.data.createdAt)||0)-(Number(b.data.createdAt)||0);});applyPublishedContent();},function(error){console.warn('تعذر تحميل التصنيفات المنشورة',error);});
@@ -1265,22 +1282,8 @@ function loadSatLibraries(){
   try{
     var savedCat=localStorage.getItem('activeCat')||'all';
     if(savedCat==='kidsgames'){savedCat='all';localStorage.setItem('activeCat','all');}
-    var savedVideoId=localStorage.getItem('activeVideoId');
+    localStorage.removeItem('activeVideoId');
     if(typeof setCategory==='function')setCategory(savedCat);
-    if(savedVideoId){
-      var list=(typeof currentVideos!=='undefined')?currentVideos:[];
-      var idx=-1;
-      for(var k=0;k<list.length;k++){if(list[k]&&list[k].id===savedVideoId){idx=k;break;}}
-      if(idx>=0){try{openPlayer(list,idx,false);}catch(e){}}
-      else{
-        try{
-          var all=getVideosForCat('all');
-          var ai=-1;
-          for(var k2=0;k2<all.length;k2++){if(all[k2]&&all[k2].id===savedVideoId){ai=k2;break;}}
-          if(ai>=0)openPlayer(all,ai,false);
-        }catch(e2){}
-      }
-    }
     try{
       if(typeof allYouTubeVideos!=='undefined'){
         allYouTubeVideos.forEach(function(v){

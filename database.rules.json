@@ -6,14 +6,14 @@
       ".read": true,
       ".write": true,
       "$categoryId": {
-        ".validate": "newData.hasChildren(['name', 'link', 'createdAt']) && newData.child('name').isString() && newData.child('name').val().length > 0 && newData.child('name').val().length <= 60 && newData.child('link').isString() && newData.child('link').val().length <= 500 && newData.child('createdAt').isNumber()",
+        ".validate": "newData.hasChildren(['name', 'link', 'createdAt']) && newData.child('name').isString() && newData.child('name').val().length > 0 && newData.child('name').val().length <= 60 && newData.child('link').isString() && newData.child('link').val().length <= 500 && newData.child('createdAt').isNumber()"
       }
     },
     "videos": {
       ".read": true,
       ".write": true,
       "$videoId": {
-        ".validate": "newData.hasChildren(['videoId', 'categoryId', 'title', 'createdAt']) && newData.child('videoId').val() == $videoId && newData.child('videoId').val().length == 11 && newData.child('categoryId').isString() && (newData.child('categoryId').val() == 'live' || newData.child('categoryId').val() == 'videos' || root.child('categories').child(newData.child('categoryId').val()).exists()) && newData.child('title').isString() && newData.child('title').val().length <= 200 && newData.child('createdAt').isNumber()",
+        ".validate": "newData.hasChildren(['videoId', 'categoryId', 'title', 'createdAt']) && newData.child('videoId').val() == $videoId && newData.child('videoId').val().length == 11 && newData.child('categoryId').isString() && (newData.child('categoryId').val() == 'live' || newData.child('categoryId').val() == 'videos' || root.child('categories').child(newData.child('categoryId').val()).exists()) && newData.child('title').isString() && newData.child('title').val().length <= 200 && newData.child('createdAt').isNumber()"
       }
     }
   }

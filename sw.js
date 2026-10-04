@@ -1,4 +1,4 @@
-const CACHE_NAME = 'kids-tv-cache-v2';
+const CACHE_NAME = 'kids-tv-cache-v3';
 const ASSETS = ['./', './index.html', './kids-tv.png', './manifest.json', './firebase-config.js'];
 
 self.addEventListener('install', function (event) {
@@ -25,18 +25,25 @@ self.addEventListener('activate', function (event) {
 
 self.addEventListener('fetch', function (event) {
   if (event.request.method !== 'GET') return;
+  var requestUrl;
+  try{requestUrl=new URL(event.request.url);}catch(e){return;}
+  if(requestUrl.origin!==self.location.origin)return;
 
   event.respondWith(
     caches.match(event.request).then(function (cached) {
       return cached || fetch(event.request).then(function (response) {
-        const cloned = response.clone();
-        caches.open(CACHE_NAME).then(function (cache) {
-          cache.put(event.request, cloned);
-        });
+        if(response.ok){
+          const cloned = response.clone();
+          caches.open(CACHE_NAME).then(function (cache) {
+            cache.put(event.request, cloned);
+          });
+        }
         return response;
       }).catch(function () {
         if (event.request.mode === 'navigate') return caches.match('./index.html');
-        return new Response('', { status: 503, statusText: 'Offline' });
+        return caches.match(event.request).then(function (cachedResponse) {
+          return cachedResponse || new Response('', { status: 503, statusText: 'Offline' });
+        });
       });
     })
   );

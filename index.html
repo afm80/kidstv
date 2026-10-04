@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Kids</title>
+<title>تلفزيون الأطفال</title>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap');
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
@@ -73,8 +73,6 @@ html,body{margin:0;padding:0;width:100%;font-family:'Cairo',sans-serif;backgroun
 #satPlayer .quality-options.open{display:grid;gap:4px;}
 #satPlayer .quality-options button{border:0;border-radius:5px;padding:7px 9px;background:transparent;color:#fff;cursor:pointer;text-align:right;}
 #satPlayer .quality-options button:hover{background:#ff6600;}
-#kidsGamesPage{display:none;width:100%;height:calc(100vh - 110px);}
-#kidsGamesFrame{width:100%;height:100%;border:none;background:#0f0f3d;display:block;}
 #ourLivePage{display:none;width:100%;height:calc(100vh - 110px);}
 #ourLiveFrame{width:100%;height:100%;border:none;background:#0f0f3d;display:block;}
 #searchPage{display:none;padding:12px;}
@@ -314,6 +312,13 @@ function renderGrid(){
   });
 }
 
+function stopPlayback(){
+  youtubeFrame.onload=null;
+  youtubeFrame.src='about:blank';
+  ytPoster.removeAttribute('src');
+  ytPoster.style.display='none';
+}
+
 function hideAllPages(){
   normalPage.style.display='none';
   satPage.classList.remove('active');
@@ -327,6 +332,7 @@ function hideAllPages(){
 function setCategory(cat){
   localStorage.setItem('activeCat',cat);
   localStorage.removeItem('activeVideoId');
+  stopPlayback();
   [...catsBar.querySelectorAll('.cat')].forEach(btn=>{btn.classList.toggle('active',btn.dataset.cat===cat);});
   hideAllPages();
   if(cat==='sat'){satPage.classList.add('active');satPage.style.display='block';window.scrollTo({top:0,behavior:'auto'});return;}
@@ -358,11 +364,10 @@ searchInput.addEventListener('input',()=>{
   });
 });
 
-function stopPlayback(){youtubeFrame.onload=null;youtubeFrame.src='about:blank';ytPoster.removeAttribute('src');ytPoster.style.display='none';}
-
 function openPlayer(videosList,index,fromClick){
   const v=videosList[index];
   if(!v)return;
+  stopPlayback();
   ytPoster.src=`https://i.ytimg.com/vi/${v.id}/hqdefault.jpg`;
   ytPoster.style.display='block';
   youtubeFrame.src=`https://www.youtube.com/embed/${v.id}?autoplay=1&rel=0&modestbranding=1&iv_load_policy=3&playsinline=1`;

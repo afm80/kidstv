@@ -325,13 +325,13 @@ https://w.shahidtv.net/live/34682514/73347194/62.m3u8
 </div>
 
 <div id="ourLivePage">
-  <iframe id="ourLiveFrame" src="about:blank" allow="autoplay; encrypted-media; fullscreen; gamepad; xr-spatial-tracking" allowfullscreen></iframe>
+  <iframe id="ourLiveFrame" src="about:blank" allow="autoplay; encrypted-media; fullscreen; gamepad; xr-spatial-tracking" allowfullscreen loading="lazy"></iframe>
 </div>
 
 <div id="playerPage">
   <div class="player-top">
     <img id="ytPoster">
-    <iframe id="youtubeFrame" allow="autoplay; encrypted-media; fullscreen" allowfullscreen></iframe>
+    <iframe id="youtubeFrame" allow="autoplay; encrypted-media; fullscreen" allowfullscreen loading="lazy"></iframe>
     <button class="close-btn" id="closeBtn">✕</button>
     <div class="player-loader" id="ytPlayerLoader"><div class="splash-spinner"></div><div>جاري تحضير الفيديو...</div></div>
     <div class="player-failure" id="ytPlayerFailure"><p>⚠ تعذر تحميل الفيديو.</p><button type="button" id="ytRetryLoaderBtn">إعادة المحاولة</button></div>
@@ -486,15 +486,23 @@ function fetchYouTubeMeta(videoId){
   if(metaQueue[videoId])return metaQueue[videoId];
   var p=new Promise(function(resolve){
     var url='https://noembed.com/embed?url=https%3A%2F%2Fwww.youtube.com%2Fwatch%3Fv%3D'+encodeURIComponent(videoId);
+    var timeout=setTimeout(function(){
+      metaCache[videoId]=null;
+      saveMetaCache(metaCache);
+      resolve(null);
+    },5000);
     fetch(url,{method:'GET',cache:'no-store'}).then(function(r){
-      return r&&r.ok?r.json():null;
+      if(!r||!r.ok)throw new Error('Network error');
+      return r.json();
     }).then(function(d){
+      clearTimeout(timeout);
       var out=null;
       if(d){out={title:d.title||null,duration:Number(d.duration)||0,author_name:d.author_name||null};}
       metaCache[videoId]=out;
       saveMetaCache(metaCache);
       resolve(out);
     }).catch(function(){
+      clearTimeout(timeout);
       metaCache[videoId]=null;
       saveMetaCache(metaCache);
       resolve(null);
@@ -665,9 +673,26 @@ function fetchYouTubeTitle(videoId){
     if(titleCache[videoId]!==undefined){return titleCache[videoId];}
     return new Promise(function(resolve){
       var api='https://www.youtube.com/oembed?url=https://www.youtube.com/watch?v='+videoId+'&format=json';
-      fetch(api).then(function(r){return r&&r.ok?r.json():null;}).then(function(data){
-        var t=(data&&data.title)?data.title:null;titleCache[videoId]=t;saveTitleCache(titleCache);resolve(t);
-      }).catch(function(){titleCache[videoId]=null;saveTitleCache(titleCache);resolve(null);});
+      var timeout=setTimeout(function(){
+        titleCache[videoId]=null;
+        saveTitleCache(titleCache);
+        resolve(null);
+      },5000);
+      fetch(api).then(function(r){
+        if(!r||!r.ok)throw new Error('Network error');
+        return r.json();
+      }).then(function(data){
+        clearTimeout(timeout);
+        var t=(data&&data.title)?data.title:null;
+        titleCache[videoId]=t;
+        saveTitleCache(titleCache);
+        resolve(t);
+      }).catch(function(){
+        clearTimeout(timeout);
+        titleCache[videoId]=null;
+        saveTitleCache(titleCache);
+        resolve(null);
+      });
     });
   });
 }
@@ -845,17 +870,16 @@ function renderGrid(){
 }
 
 function stopPlayback(){
-  try{youtubeFrame.contentWindow.postMessage('{"event":"command","func":"pauseVideo","args":""}','*');}catch(e){}
-  try{youtubeFrame.contentWindow.postMessage('{"event":"command","func":"stopVideo","args":""}','*');}catch(e){}
-  try{youtubeFrame.contentWindow.postMessage('{"event":"command","func":"clearVideo","args":""}','*');}catch(e){}
-  youtubeFrame.onload=null;
-  try{youtubeFrame.src='about:blank';}catch(e){}
-  ytPoster.removeAttribute('src');
-  ytPoster.style.display='none';
+  try{if(youtubeFrame&&youtubeFrame.contentWindow){youtubeFrame.contentWindow.postMessage('{"event":"command","func":"pauseVideo","args":""}','*');}}catch(e){}
+  try{if(youtubeFrame&&youtubeFrame.contentWindow){youtubeFrame.contentWindow.postMessage('{"event":"command","func":"stopVideo","args":""}','*');}}catch(e){}
+  try{if(youtubeFrame&&youtubeFrame.contentWindow){youtubeFrame.contentWindow.postMessage('{"event":"command","func":"clearVideo","args":""}','*');}}catch(e){}
+  if(youtubeFrame){youtubeFrame.onload=null;try{youtubeFrame.src='about:blank';}catch(e){}}
+  if(ytPoster){ytPoster.removeAttribute('src');ytPoster.style.display='none';}
   try{if(ytPlayerLoader)ytPlayerLoader.classList.remove('show');}catch(e){}
   try{if(ytPlayerFailure)ytPlayerFailure.classList.remove('show');}catch(e){}
   try{if(satPlayerLoader)satPlayerLoader.classList.remove('show');}catch(e){}
   try{if(satPlayerFailure)satPlayerFailure.classList.remove('show');}catch(e){}
+  if(ourLiveFrame){try{ourLiveFrame.src='about:blank';}catch(e){}}
 }
 
 function stopAllMedia(){
@@ -864,7 +888,7 @@ function stopAllMedia(){
   document.querySelectorAll('video,audio,iframe').forEach(function(el){
     try{
       if(el.tagName==='VIDEO'||el.tagName==='AUDIO'){el.pause();el.muted=true;el.volume=0;el.removeAttribute('src');try{el.load();}catch(z){}}
-      else if(el.tagName==='IFRAME'&&el!==youtubeFrame&&el!==ourLiveFrame){el.setAttribute('src','about:blank');}
+      else if(el.tagName==='IFRAME'){el.setAttribute('src','about:blank');}
     }catch(z){}
   });
 }
@@ -989,11 +1013,24 @@ function openPlayer(videosList,index,fromClick){
     var ytFailed=false;
     var ytFailTimer=setTimeout(function(){
       if(ytPoster.style.display==='block'&&!ytFailed){ytFailed=true;showPlayerFailure('yt','⚠ استغرق تحميل الفيديو وقتاً طويلاً.',function(){openPlayer(videosList,index,fromClick);});}
-    },10000);
+    },8000);
     var ytRetryBtn=document.getElementById('ytRetryLoaderBtn');
     if(ytRetryBtn){ytRetryBtn.onclick=function(){try{ytPlayerFailure.classList.remove('show');}catch(e){}openPlayer(videosList,index,fromClick);};}
-    youtubeFrame.onload=function(){clearTimeout(ytFailTimer);ytFailed=true;ytPoster.style.display='none';hidePlayerLoader('yt');try{ytPlayerFailure.classList.remove('show');}catch(e){};};
-    youtubeFrame.src='https://www.youtube.com/embed/'+v.id+'?autoplay=1&rel=0&modestbranding=1&iv_load_policy=3&playsinline=1&enablejsapi=1';
+    youtubeFrame.onload=function(){
+      clearTimeout(ytFailTimer);
+      ytFailed=true;
+      ytPoster.style.display='none';
+      hidePlayerLoader('yt');
+      try{ytPlayerFailure.classList.remove('show');}catch(e){}
+    };
+    youtubeFrame.onerror=function(){
+      clearTimeout(ytFailTimer);
+      if(!ytFailed){
+        ytFailed=true;
+        showPlayerFailure('yt','⚠ تعذر تحميل الفيديو من يوتيوب.',function(){openPlayer(videosList,index,fromClick);});
+      }
+    };
+    youtubeFrame.src='https://www.youtube.com/embed/'+v.id+'?autoplay=1&rel=0&modestbranding=1&iv_load_policy=3&playsinline=1&enablejsapi=1&origin='+encodeURIComponent(window.location.origin);
     relatedScroll.innerHTML='';
     for(var ri=0;ri<videosList.length;ri++){
       if(ri===index)continue;
@@ -1037,6 +1074,13 @@ try{relatedScroll.addEventListener('mouseup',function(){isDown=false;try{related
 try{relatedScroll.addEventListener('mousemove',function(e){if(!isDown)return;try{e.preventDefault();}catch(z){}var x=e.pageX-relatedScroll.offsetLeft;var walk=(x-startX)*1.5;relatedScroll.scrollLeft=scrollLeft-walk;});}catch(e){}
 
 try{closeBtn.onclick=closePlayer;}catch(e){}
+try{
+  if('backforward'in document.body||'onbackforward'in window){
+    window.addEventListener('backforward',function(){
+      try{stopAllMedia();}catch(e){}
+    });
+  }
+}catch(e){}
 try{window.addEventListener('popstate',function(){
   try{
     var hadSub=consumePopState();
@@ -1058,9 +1102,10 @@ try{window.addEventListener('popstate',function(){
     if(hadSub){stopAllMedia();}
   }catch(e2){}
 });}catch(e){}
-try{window.addEventListener('pagehide',stopAllMedia);}catch(e){}
-try{window.addEventListener('beforeunload',stopAllMedia);}catch(e){}
+try{window.addEventListener('pagehide',function(){try{stopAllMedia();}catch(e){}});}catch(e){}
+try{window.addEventListener('beforeunload',function(){try{stopAllMedia();}catch(e){}});}catch(e){}
 try{document.addEventListener('visibilitychange',function(){try{if(document.visibilityState==='hidden')stopAllMedia();}catch(e){}});}catch(e){}
+try{window.addEventListener('blur',function(){try{stopAllMedia();}catch(e){}});}catch(e){}
 
 /* ===== القنوات الفضائية ===== */
 var satVideoEl=document.getElementById('satVideoEl'),satWrapEl=document.getElementById('satVideoWrap'),satGridEl=document.getElementById('satGrid'),satMsgEl=document.getElementById('satMsg'),satRetryKidsBtn=document.getElementById('satRetryKidsBtn');
@@ -1136,11 +1181,11 @@ function satPlayWithEngine(url,engine,token,failed){
       satVideoEl.play().catch(function(){if(token===satEngineToken)failed();});
       return;
     }
-    if(engine==='videojs'&&window.videojs){
-      try{satActiveVideoJs=videojs(satVideoEl,{autoplay:true,controls:true,responsive:true,fluid:false});satActiveVideoJs.src({src:url,type:'application/x-mpegURL'});satActiveVideoJs.on('playing',function(){if(token===satEngineToken)satFinishKidsEngine(token);});satActiveVideoJs.on('error',function(){if(token===satEngineToken)failed();});satActiveVideoJs.play().catch(function(){});return;}catch(e){if(token===satEngineToken)failed();return;}
-    }
     if(engine==='hlsjs'&&window.Hls&&Hls.isSupported()){
       try{satActiveHls=new Hls();satActiveHls.loadSource(url);satActiveHls.attachMedia(satVideoEl);satActiveHls.on(Hls.Events.MANIFEST_PARSED,function(){satShowQualities(satActiveHls,token);satVideoEl.play().catch(function(){});});satActiveHls.on(Hls.Events.FRAG_LOADED,function(){if(token===satEngineToken)satFinishKidsEngine(token);});satActiveHls.on(Hls.Events.ERROR,function(event,data){if(data&&data.fatal&&token===satEngineToken)failed();});return;}catch(e){if(token===satEngineToken)failed();return;}
+    }
+    if(engine==='videojs'&&window.videojs){
+      try{satActiveVideoJs=videojs(satVideoEl,{autoplay:true,controls:true,responsive:true,fluid:false});satActiveVideoJs.src({src:url,type:'application/x-mpegURL'});satActiveVideoJs.on('playing',function(){if(token===satEngineToken)satFinishKidsEngine(token);});satActiveVideoJs.on('error',function(){if(token===satEngineToken)failed();});satActiveVideoJs.play().catch(function(){});return;}catch(e){if(token===satEngineToken)failed();return;}
     }
     if(engine==='shaka'&&window.shaka&&shaka.Player&&shaka.Player.isBrowserSupported()){
       try{satActiveShaka=new shaka.Player(satVideoEl);satActiveShaka.load(url).then(function(){satVideoEl.play().then(function(){if(token===satEngineToken)satFinishKidsEngine(token);}).catch(function(){if(token===satEngineToken)failed();});}).catch(function(){if(token===satEngineToken)failed();});return;}catch(e){if(token===satEngineToken)failed();return;}
@@ -1178,7 +1223,7 @@ function satPlayVideo(url,name,image,automatic){
   if(satRetryLoaderBtn){satRetryLoaderBtn.onclick=function(){try{satPlayerFailure.classList.remove('show');}catch(e){}satPlayVideo(satActiveUrl,satActiveName,satActiveImage,true);};}
   var token=satEngineToken;
   var selected=document.getElementById('satEngineSelect').value;
-  var baseEngines=selected==='auto'?['native','hlsjs','dplayer','clappr','videojs','shaka']:[selected,'native','hlsjs','dplayer','clappr','videojs','shaka'];
+  var baseEngines=selected==='auto'?['native','hlsjs','videojs','dplayer','clappr','shaka']:[selected,'native','hlsjs','videojs','dplayer','clappr','shaka'];
   var engines=[];
   var variants=buildUrlVariants(url);
   for(var v=0;v<variants.length;v++){for(var e=0;e<baseEngines.length;e++){engines.push({engine:baseEngines[e],url:variants[v]});}}
@@ -1195,7 +1240,7 @@ function satPlayVideo(url,name,image,automatic){
     satVideoEl.muted=false;
     satVideoEl.volume=1;
     satPlayWithEngine(item.url,item.engine,token,next);
-    satEngineTimer=setTimeout(function(){if(token===satEngineToken)next();},6000);
+    satEngineTimer=setTimeout(function(){if(token===satEngineToken)next();},2500);
   }
   next();
 }
@@ -1294,6 +1339,14 @@ function loadSatLibraries(){
     }catch(e3){}
     try{window.addEventListener('load',nukeSplash,{once:true});}catch(e4){}
   }catch(err){try{console.error(err);}catch(e5){}nukeSplash();}
+  try{
+    if('mediaSession'in navigator){
+      navigator.mediaSession.setActionHandler('play',function(){});
+      navigator.mediaSession.setActionHandler('pause',function(){});
+      navigator.mediaSession.setActionHandler('seekbackward',function(){});
+      navigator.mediaSession.setActionHandler('seekforward',function(){});
+    }
+  }catch(e){}
 })();
 </script>
 </body>

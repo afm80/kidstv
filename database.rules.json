@@ -13,7 +13,7 @@
       ".read": true,
       ".write": true,
       "$videoId": {
-        ".validate": "newData.hasChildren(['videoId', 'categoryId', 'title', 'createdAt']) && newData.child('videoId').val() == $videoId && newData.child('videoId').val().length == 11 && newData.child('categoryId').isString() && (newData.child('categoryId').val() == 'live' || newData.child('categoryId').val() == 'videos' || root.child('categories').child(newData.child('categoryId').val()).exists()) && newData.child('title').isString() && newData.child('title').val().length <= 200 && newData.child('createdAt').isNumber()"
+        ".validate": "newData.hasChildren(['videoId', 'categoryId', 'title', 'createdAt']) && newData.child('videoId').val() == $videoId && newData.child('videoId').val().length == 11 && newData.child('categoryId').isString() && (newData.child('categoryId').val() == 'live' || newData.child('categoryId').val() == 'videos' || root.child('categories').child(newData.child('categoryId').val()).exists()) && newData.child('title').isString() && newData.child('title').val().length > 0 && newData.child('title').val().length <= 200 && newData.child('createdAt').isNumber()"
       }
     }
   }

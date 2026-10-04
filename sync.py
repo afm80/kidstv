@@ -1,14 +1,26 @@
 import json
 import requests
 import re
+import os
 from typing import List, Dict, Optional
 
-# Load config
-with open('config.json', 'r', encoding='utf-8') as f:
-    config = json.load(f)
+# Load config from environment variables (GitHub Secrets)
+YOUTUBE_API_KEY = os.environ.get('YOUTUBE_API_KEY')
+FIREBASE_CONFIG_JSON = os.environ.get('FIREBASE_CONFIG')
 
-FIREBASE_DB_URL = config['firebase']['databaseURL']
-YOUTUBE_API_KEY = config['youtube']['apiKey']
+if FIREBASE_CONFIG_JSON:
+    firebase_config = json.loads(FIREBASE_CONFIG_JSON)
+    FIREBASE_DB_URL = firebase_config['databaseURL']
+else:
+    # Fallback to config.json for local testing
+    try:
+        with open('config.json', 'r', encoding='utf-8') as f:
+            config = json.load(f)
+        FIREBASE_DB_URL = config['firebase']['databaseURL']
+        if not YOUTUBE_API_KEY:
+            YOUTUBE_API_KEY = config['youtube']['apiKey']
+    except:
+        raise Exception("No Firebase config found in environment or config.json")
 
 # Load channels
 with open('channels.txt', 'r', encoding='utf-8') as f:

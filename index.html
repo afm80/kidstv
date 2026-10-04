@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>تلفزيون الأطفال</title>
+<title>Kids</title>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap');
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
@@ -183,10 +183,6 @@ https://w.shahidtv.net/live/34682514/73347194/62.m3u8
   </div>
 </div>
 
-<div id="kidsGamesPage">
-  <iframe id="kidsGamesFrame" src="about:blank" allow="autoplay; encrypted-media; fullscreen; gamepad; xr-spatial-tracking" allowfullscreen></iframe>
-</div>
-
 <div id="ourLivePage">
   <iframe id="ourLiveFrame" src="about:blank" allow="autoplay; encrypted-media; fullscreen; gamepad; xr-spatial-tracking" allowfullscreen></iframe>
 </div>
@@ -220,35 +216,9 @@ https://w.shahidtv.net/live/34682514/73347194/62.m3u8
 
 /* ===== روابط تصنيف "قنوات البث" ===== */
 const liveData = `
-https://www.youtube.com/watch?v=oPonPGALYaU
-https://www.youtube.com/watch?v=mF3s5-6mIH4
-https://www.youtube.com/watch?v=nugWjdbb_GM
-https://www.youtube.com/watch?v=WMBR_vDkd94
-https://www.youtube.com/watch?v=90kaC8Kbw0k
-https://www.youtube.com/watch?v=rEKifG2XUZg
-https://www.youtube.com/watch?v=cwlERd7fCl8
+https://www.youtube.com/watch?v=JQ7mRtfj02I
 https://www.youtube.com/watch?v=S_6wjcgw1mk
-https://www.youtube.com/watch?v=gyqOOJCL4gA
-https://www.youtube.com/watch?v=-Ye42cCA4Pg
-https://www.youtube.com/watch?v=ckjqMRpkdWY
-https://www.youtube.com/watch?v=w-7ZRByK1zA
-https://www.youtube.com/watch?v=Vf9V4uereTw
-https://www.youtube.com/watch?v=DCOwDr3NaeA
-https://www.youtube.com/watch?v=8D6qmCFOVXk
-https://www.youtube.com/watch?v=JYGpGKjOxvw
-https://www.youtube.com/watch?v=gPV7kG0X1ao
-https://www.youtube.com/watch?v=xHToZUYqP30
-https://www.youtube.com/watch?v=v5UO0XAocEI
-https://www.youtube.com/watch?v=neGRgiLLgsc
-https://www.youtube.com/watch?v=G9WgurWVYQg
-https://www.youtube.com/watch?v=CSNjwlJ7e8k
-https://www.youtube.com/watch?v=iFyI-wdLvRE
-https://www.youtube.com/watch?v=LMkmeEpvpss
-https://www.youtube.com/watch?v=s0xPHuFof4w
-https://www.youtube.com/watch?v=K9IgWfBi9kY
-https://www.youtube.com/watch?v=5TcsWLngvyc
-https://www.youtube.com/watch?v=UavAcv2CBfc
-https://www.youtube.com/watch?v=8JIfZedF0KY
+https://www.youtube.com/watch?v=HoX-sU9hDV8
 `;
 
 /* ===== روابط تصنيف "فيديوهات" ===== */
@@ -275,7 +245,7 @@ https://www.youtube.com/watch?v=AmHD0lbMRWk
 https://youtu.be/LCmQ70JPXCI?si=NthnmTYKKWEo2xDz
 `;
 
-const grid=document.getElementById("channelsGrid"),playerPage=document.getElementById("playerPage"),youtubeFrame=document.getElementById("youtubeFrame"),ytPoster=document.getElementById("ytPoster"),relatedScroll=document.getElementById("relatedScroll"),closeBtn=document.getElementById("closeBtn"),catsBar=document.getElementById("catsBar"),normalPage=document.getElementById("normalPage"),satPage=document.getElementById("satPage"),kidsGamesPage=document.getElementById("kidsGamesPage"),kidsGamesFrame=document.getElementById("kidsGamesFrame"),ourLivePage=document.getElementById("ourLivePage"),ourLiveFrame=document.getElementById("ourLiveFrame"),searchPage=document.getElementById("searchPage"),searchInput=document.getElementById("searchInput"),searchGrid=document.getElementById("searchGrid"),searchEmpty=document.getElementById("searchEmpty"),searchBtn=document.getElementById("searchBtn");
+const grid=document.getElementById("channelsGrid"),playerPage=document.getElementById("playerPage"),youtubeFrame=document.getElementById("youtubeFrame"),ytPoster=document.getElementById("ytPoster"),relatedScroll=document.getElementById("relatedScroll"),closeBtn=document.getElementById("closeBtn"),catsBar=document.getElementById("catsBar"),normalPage=document.getElementById("normalPage"),satPage=document.getElementById("satPage"),ourLivePage=document.getElementById("ourLivePage"),ourLiveFrame=document.getElementById("ourLiveFrame"),searchPage=document.getElementById("searchPage"),searchInput=document.getElementById("searchInput"),searchGrid=document.getElementById("searchGrid"),searchEmpty=document.getElementById("searchEmpty"),searchBtn=document.getElementById("searchBtn");
 
 function getYouTubeId(url){
   if(!url)return null;
@@ -348,10 +318,10 @@ function hideAllPages(){
   normalPage.style.display='none';
   satPage.classList.remove('active');
   satPage.style.display='none';
-  kidsGamesPage.style.display='none';
   ourLivePage.style.display='none';
   searchPage.style.display='none';
   playerPage.style.display='none';
+  if(ourLiveFrame.src!=='about:blank'){ourLiveFrame.src='about:blank';}
 }
 
 function setCategory(cat){
@@ -360,7 +330,7 @@ function setCategory(cat){
   [...catsBar.querySelectorAll('.cat')].forEach(btn=>{btn.classList.toggle('active',btn.dataset.cat===cat);});
   hideAllPages();
   if(cat==='sat'){satPage.classList.add('active');satPage.style.display='block';window.scrollTo({top:0,behavior:'auto'});return;}
-  if(cat==='kidsgames'){kidsGamesPage.style.display='block';if(kidsGamesFrame.src==='about:blank'){kidsGamesFrame.src='https://www.crazygames.com';}window.scrollTo({top:0,behavior:'auto'});return;}
+  if(cat==='kidsgames'){window.open('https://www.crazygames.com','_blank');return;}
   if(cat==='ourlive'){ourLivePage.style.display='block';if(ourLiveFrame.src==='about:blank'){ourLiveFrame.src='https://afm80.github.io/kidstvlive/';}window.scrollTo({top:0,behavior:'auto'});return;}
   if(cat==='search'){searchPage.style.display='block';searchInput.value='';searchGrid.innerHTML='';searchEmpty.style.display='block';searchEmpty.textContent='اكتب كلمة للبحث...';window.scrollTo({top:0,behavior:'auto'});setTimeout(()=>searchInput.focus(),100);return;}
   normalPage.style.display='block';
@@ -434,12 +404,7 @@ relatedScroll.addEventListener('mouseup',()=>{isDown=false;relatedScroll.classLi
 relatedScroll.addEventListener('mousemove',e=>{if(!isDown)return;e.preventDefault();const x=e.pageX-relatedScroll.offsetLeft;const walk=(x-startX)*1.5;relatedScroll.scrollLeft=scrollLeft-walk;});
 
 closeBtn.onclick=closePlayer;
-
-/* زر الرجوع في الجهاز أو المتصفح */
-window.addEventListener('popstate',()=>{
-  if(playerPage.style.display==='block')closePlayer();
-});
-try{history.replaceState({view:'home'},'','');}catch(e){}
+window.addEventListener('popstate',()=>{if(playerPage.style.display==='block')closePlayer();});
 window.addEventListener('pagehide',stopPlayback);
 window.addEventListener('beforeunload',stopPlayback);
 
@@ -464,15 +429,6 @@ function satBuildCards(){
 function satShowMsg(text){satMsgEl.textContent=text;satMsgEl.style.display='block';satRetryKidsBtn.hidden=!/^⚠/.test(text);}
 function satHideMsg(){satMsgEl.style.display='none';satMsgEl.textContent='';satRetryKidsBtn.hidden=true;}
 satRetryKidsBtn.addEventListener('click',function(){satFallbackCycle=0;if(!satActiveUrl)return;if(satKidsPlayerMode==='backup'){satPlayBackupVideo(satActiveUrl);}else{satPlayVideo(satActiveUrl);}});
-
-function satIsHls(url){return /\.m3u8(\?.*)?$/i.test(url)||/format=m3u8/i.test(url);}
-function satIsDash(url){return /\.mpd(\?.*)?$/i.test(url)||/format=mpd/i.test(url);}
-function satIsFlv(url){return /\.flv(\?.*)?$/i.test(url);}
-function satIsMkv(url){return /\.mkv(\?.*)?$/i.test(url);}
-function satIsTs(url){return /\.ts(\?.*)?$/i.test(url);}
-function satIsDirectVideo(url){return /\.(mp4|webm|ogg|ogv|mov|m4v|3gp|m4s|mp3|aac|m4a)(\?.*)?$/i.test(url);}
-function satIsRtmp(url){return /^rtmp:\/\//i.test(url);}
-function satIsRtsp(url){return /^rtsp:\/\//i.test(url);}
 
 var satActiveEngine='native',satActiveUrl='',satKidsPlayerMode='primary',satFallbackCycle=0,satActiveHls=null,satActiveShaka=null,satActiveVideoJs=null,satActiveDplayer=null,satActiveClappr=null,satEngineTimer=null,satEngineToken=0,satQualitySources=[],satQualityIndex=0;
 

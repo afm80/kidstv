@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>تلفزيون الأطفال</title>
+<title>Kids</title>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap');
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
@@ -466,7 +466,10 @@ function satPlayWithEngine(url,engine,token,failed){
 function satFinishKidsEngine(token){if(token!==satEngineToken)return;if(satEngineTimer){clearTimeout(satEngineTimer);satEngineTimer=null;}}
 
 function satPlayVideo(url,automatic){
-  satResetPlayers();satActiveUrl=url;
+  satResetPlayers();
+  satVideoEl.muted=false;
+  satVideoEl.volume=1;
+  satActiveUrl=url;
   if(!automatic)satFallbackCycle=0;
   satSetKidsPlayerMode('primary');satHideMsg();
   var token=satEngineToken;
@@ -482,6 +485,8 @@ function satPlayVideo(url,automatic){
     }
     var engine=engines[index++];
     satResetPlayersForEngine();
+    satVideoEl.muted=false;
+    satVideoEl.volume=1;
     satPlayWithEngine(url,engine,token,next);
     satEngineTimer=setTimeout(function(){if(token===satEngineToken)next();},6000);
   }
@@ -489,7 +494,10 @@ function satPlayVideo(url,automatic){
 }
 
 function satPlayBackupVideo(url){
-  satResetPlayers();satActiveUrl=url;satSetKidsPlayerMode('backup');satHideMsg();
+  satResetPlayers();
+  satVideoEl.muted=false;
+  satVideoEl.volume=1;
+  satActiveUrl=url;satSetKidsPlayerMode('backup');satHideMsg();
   if(!window.shaka||!shaka.Player.isBrowserSupported()){satShowMsg('⚠ المشغل الاحتياطي غير مدعوم في هذا المتصفح.');return;}
   try{satActiveShaka=new shaka.Player(satVideoEl);satActiveShaka.load(url).then(function(){satVideoEl.play().catch(function(){});}).catch(function(){satShowMsg('⚠ فشل المشغل الاحتياطي، جاري الرجوع للمشغل الرئيسي...');setTimeout(function(){if(satActiveUrl===url&&satKidsPlayerMode==='backup')satPlayVideo(url,true);},1000);});}catch(e){satShowMsg('⚠ تعذر تشغيل المشغل الاحتياطي.');}
 }

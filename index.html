@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>تلفزيون الأطفال</title>
+<title>Kids</title>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap');
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
@@ -31,7 +31,7 @@ html,body{margin:0;padding:0;width:100%;font-family:'Cairo',sans-serif;backgroun
 .thumb-wrap{position:relative;width:100%;aspect-ratio:16/9;overflow:hidden;background:#222;border-radius:10px;}
 .thumb-wrap img{width:100%;height:100%;object-fit:cover;display:block;}
 .duration{position:absolute;bottom:6px;left:6px;background:rgba(0,0,0,.8);color:#fff;font-size:11px;font-weight:700;padding:2px 6px;border-radius:4px;}
-.card-title{font-size:13px;font-weight:700;color:#fff;background:transparent;padding:8px 4px 4px 24px;margin:0;line-height:1.35;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;position:relative;text-align:right;}
+.card-title{font-size:13px;font-weight:700;color:#fff;background:transparent;padding:8px 4px 4px 24px;margin:0;line-height:1.35;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;position:relative;text-align:right;min-height:44px;}
 .card-title::after{content:"⋮";position:absolute;left:2px;top:50%;transform:translateY(-50%);font-size:18px;color:#aaa;}
 #playerPage{position:fixed;inset:0;background:#000;display:none;z-index:9999;overflow-y:auto;}
 .player-top{position:relative;width:100%;aspect-ratio:16/9;background:#000;}
@@ -46,7 +46,7 @@ html,body{margin:0;padding:0;width:100%;font-family:'Cairo',sans-serif;backgroun
 .related-card{flex:0 0 200px;background:#000;border:none;padding:5px;cursor:pointer;text-align:right;font:inherit;color:inherit;border-radius:12px;}
 .related-thumb{position:relative;width:100%;aspect-ratio:16/9;overflow:hidden;background:#222;border-radius:8px;}
 .related-thumb img{width:100%;height:100%;object-fit:cover;display:block;}
-.related-title{font-size:12px;font-weight:700;color:#fff;background:transparent;padding:6px 4px 4px 4px;margin:0;line-height:1.3;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}
+.related-title{font-size:12px;font-weight:700;color:#fff;background:transparent;padding:6px 4px 4px 4px;margin:0;line-height:1.3;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;min-height:36px;}
 #satPage{display:none;}
 #satContent{text-align:center;background:#0f0f3d;}
 #satContent .grid-sat{display:grid;grid-template-columns:repeat(auto-fit,120px);gap:16px;padding:16px;max-width:1200px;margin:0 auto;justify-content:center;}
@@ -211,129 +211,41 @@ https://w.shahidtv.net/live/34682514/73347194/62.m3u8
 <script src="https://cdn.jsdelivr.net/npm/clappr@latest/dist/clappr.min.js"></script>
 
 <script>
-const liveData = `
-https://www.youtube.com/watch?v=oPonPGALYaU
-1
-https://www.youtube.com/watch?v=mF3s5-6mIH4
-2
-https://www.youtube.com/watch?v=nugWjdbb_GM
-3
-https://www.youtube.com/watch?v=WMBR_vDkd94
-4
-https://www.youtube.com/watch?v=90kaC8Kbw0k
-5
-https://www.youtube.com/watch?v=rEKifG2XUZg
-6
-https://www.youtube.com/watch?v=cwlERd7fCl8
-7
-https://www.youtube.com/watch?v=S_6wjcgw1mk
-8
-https://www.youtube.com/watch?v=gyqOOJCL4gA
-9
-https://www.youtube.com/watch?v=-Ye42cCA4Pg
-10
-https://www.youtube.com/watch?v=ckjqMRpkdWY
-11
-https://www.youtube.com/watch?v=w-7ZRByK1zA
-12
-https://www.youtube.com/watch?v=Vf9V4uereTw
-13
-https://www.youtube.com/watch?v=DCOwDr3NaeA
-14
-https://www.youtube.com/watch?v=8D6qmCFOVXk
-15
-https://www.youtube.com/watch?v=JYGpGKjOxvw
-16
-https://www.youtube.com/watch?v=gPV7kG0X1ao
-17
-https://www.youtube.com/watch?v=xHToZUYqP30
-18
-https://www.youtube.com/watch?v=v5UO0XAocEI
-19
-https://www.youtube.com/watch?v=neGRgiLLgsc
-20
-https://www.youtube.com/watch?v=G9WgurWVYQg
-21
-https://www.youtube.com/watch?v=CSNjwlJ7e8k
-22
-https://www.youtube.com/watch?v=iFyI-wdLvRE
-23
-https://www.youtube.com/watch?v=LMkmeEpvpss
-24
-https://www.youtube.com/watch?v=s0xPHuFof4w
-25
-https://www.youtube.com/watch?v=K9IgWfBi9kY
-26
-https://www.youtube.com/watch?v=5TcsWLngvyc
-27
-https://www.youtube.com/watch?v=UavAcv2CBfc
-28
-https://www.youtube.com/watch?v=8JIfZedF0KY
+/* =====================================================
+   طريقة إضافة الروابط:
+   رابط واحد فقط في كل سطر، بدون أسماء
+   الكود يجلب اسم الفيديو تلقائياً من يوتيوب
+   ===================================================== */
 
+/* ===== روابط تصنيف "قنوات البث" ===== */
+const liveData = `
+https://www.youtube.com/watch?v=JQ7mRtfj02I
+https://www.youtube.com/watch?v=S_6wjcgw1mk
+https://www.youtube.com/watch?v=HoX-sU9hDV8
 `;
 
+/* ===== روابط تصنيف "فيديوهات" ===== */
 const videosData = `
-Tom & Jerry
 https://www.youtube.com/watch?v=rEKifG2XUZg
-Tom & Jerry
 https://www.youtube.com/watch?v=_XeGYNTiuSM
-Tom & Jerry
 https://www.youtube.com/watch?v=400k2SKoeh4
-Mini Moments
 https://www.youtube.com/watch?v=btP-bWKDVik
-Adventure Time
 https://www.youtube.com/watch?v=uZkaJ3e9nfY
-Mr Bean
 https://www.youtube.com/watch?v=kRL8tyCl1lQ
-Mr Bean
 https://www.youtube.com/watch?v=yOxRjvGkYlc
-shaun the Sheep
 https://www.youtube.com/watch?v=iMzH7R-OJ9E
-shaun the Sheep
-Tom & Jerry
-https://www.youtube.com/watch?v=rEKifG2XUZg
-Tom & Jerry
-https://www.youtube.com/watch?v=_XeGYNTiuSM
-Tom & Jerry
-https://www.youtube.com/watch?v=400k2SKoeh4
-Mini Moments
-https://www.youtube.com/watch?v=btP-bWKDVik
-Adventure Time
-https://www.youtube.com/watch?v=uZkaJ3e9nfY
-Mr Bean 
-https://www.youtube.com/watch?v=kRL8tyCl1lQ
-Mr Bean 
-https://www.youtube.com/watch?v=yOxRjvGkYlc
-shaun the Sheep
-https://www.youtube.com/watch?v=iMzH7R-OJ9E
-shaun the Sheep
 https://www.youtube.com/watch?v=yH28BYhTIYo
-World of Gumball
 https://www.youtube.com/watch?v=nIyaCRNwxhU
-غامبول الموسم الجديد
 https://www.youtube.com/watch?v=IT1IZpY7uzA
-ماشا والدب
-https://www.youtube.com/watch?v=S_6wjcgw1mk
-لولو وناسة
-https://www.youtube.com/watch?v=HoX-sU9hDV8
-أغاني جديدة
 https://www.youtube.com/watch?v=JQ7mRtfj02I
-تيغ وليو
 https://www.youtube.com/watch?v=-BaC2_cmAiU
-عيد ميلادي
 https://www.youtube.com/watch?v=OzAZIsAyzk0
-سجن الهاتف المحمول
 https://www.youtube.com/watch?v=zoMjGCG5dnA
-تحدي الطائرة
 https://www.youtube.com/watch?v=XcUp-tb9bJM
-روزي وأصدقاؤها
 https://www.youtube.com/watch?v=-YiFym-tpQQ
-قناة أسرتنا مباشر
-https://www.youtube.com/watch?v=JQ7mRtfj02I
-أبطال التايتنز، انطلقوا!
 https://www.youtube.com/watch?v=21hAlnDFTLw
-نقيب لابرادور
 https://www.youtube.com/watch?v=AmHD0lbMRWk
+https://youtu.be/LCmQ70JPXCI?si=NthnmTYKKWEo2xDz
 `;
 
 const grid=document.getElementById("channelsGrid"),playerPage=document.getElementById("playerPage"),youtubeFrame=document.getElementById("youtubeFrame"),ytPoster=document.getElementById("ytPoster"),relatedScroll=document.getElementById("relatedScroll"),closeBtn=document.getElementById("closeBtn"),catsBar=document.getElementById("catsBar"),normalPage=document.getElementById("normalPage"),satPage=document.getElementById("satPage"),kidsGamesPage=document.getElementById("kidsGamesPage"),kidsGamesFrame=document.getElementById("kidsGamesFrame"),ourLivePage=document.getElementById("ourLivePage"),ourLiveFrame=document.getElementById("ourLiveFrame"),searchPage=document.getElementById("searchPage"),searchInput=document.getElementById("searchInput"),searchGrid=document.getElementById("searchGrid"),searchEmpty=document.getElementById("searchEmpty"),searchBtn=document.getElementById("searchBtn");
@@ -357,19 +269,40 @@ function getYouTubeId(url){
   }catch(e){return null;}
 }
 
-function parseData(data){
-  const lines=data.trim().split('\n').filter(l=>l.trim()!=='');
+const TITLE_CACHE_KEY='yt_titles_v1';
+function loadTitleCache(){try{const s=localStorage.getItem(TITLE_CACHE_KEY);return s?JSON.parse(s):{};}catch(e){return {};}}
+function saveTitleCache(cache){try{localStorage.setItem(TITLE_CACHE_KEY,JSON.stringify(cache));}catch(e){}}
+const titleCache=loadTitleCache();
+
+function fetchYouTubeTitle(videoId){
+  return new Promise((resolve)=>{
+    if(titleCache[videoId]!==undefined){resolve(titleCache[videoId]);return;}
+    const api='https://www.youtube.com/oembed?url=https://www.youtube.com/watch?v='+videoId+'&format=json';
+    fetch(api).then(r=>r.ok?r.json():null).then(data=>{
+      let t=(data&&data.title)?data.title:null;
+      titleCache[videoId]=t;
+      saveTitleCache(titleCache);
+      resolve(t);
+    }).catch(()=>resolve(null));
+  });
+}
+
+function parseUrls(data){
+  const lines=data.trim().split('\n').map(l=>l.trim()).filter(l=>l!=='');
   const list=[];
-  for(let i=0;i<lines.length;i+=2){
-    const title=lines[i]?.trim(),url=lines[i+1]?.trim(),id=getYouTubeId(url);
-    if(title&&id)list.push({title,id});
+  for(const url of lines){
+    const id=getYouTubeId(url);
+    if(id)list.push({id,title:titleCache[id]||''});
   }
   return list;
 }
 
-const categories={live:parseData(liveData),videos:parseData(videosData)};
+const categories={live:parseUrls(liveData),videos:parseUrls(videosData)};
 const allYouTubeVideos=[...categories.live.map(v=>({...v,cat:'live'})),...categories.videos.map(v=>({...v,cat:'videos'}))];
-let activeCat='all',currentVideos=[];
+
+let activeCat=localStorage.getItem('activeCat')||'all';
+let currentVideos=[];
+let savedVideoIndex=parseInt(localStorage.getItem('activeVideoIndex')||'-1',10);
 
 function shuffle(arr){const a=arr.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
 function getVideosForCat(cat){if(cat==='all')return shuffle([...categories.live,...categories.videos]);return categories[cat]?categories[cat].slice():[];}
@@ -379,9 +312,10 @@ function renderGrid(){
   currentVideos.forEach((v,index)=>{
     const card=document.createElement('button');
     card.className='card';
-    card.innerHTML=`<div class="thumb-wrap"><img src="https://i.ytimg.com/vi/${v.id}/hqdefault.jpg" alt="${v.title}"><span class="duration">--:--</span></div><div class="card-title">${v.title}</div>`;
+    card.innerHTML=`<div class="thumb-wrap"><img src="https://i.ytimg.com/vi/${v.id}/hqdefault.jpg" alt=""><span class="duration">--:--</span></div><div class="card-title">${v.title||''}</div>`;
     card.onclick=()=>openPlayer(currentVideos,index,true);
     grid.appendChild(card);
+    if(!v.title){fetchYouTubeTitle(v.id).then(t=>{if(t){v.title=t;card.querySelector('.card-title').textContent=t;}});}
   });
 }
 
@@ -396,6 +330,7 @@ function hideAllPages(){
 
 function setCategory(cat){
   activeCat=cat;
+  localStorage.setItem('activeCat',cat);
   [...catsBar.querySelectorAll('.cat')].forEach(btn=>{btn.classList.toggle('active',btn.dataset.cat===cat);});
   hideAllPages();
   if(cat==='sat'){satPage.classList.add('active');satPage.style.display='block';window.scrollTo({top:0,behavior:'auto'});return;}
@@ -415,13 +350,13 @@ searchInput.addEventListener('input',()=>{
   const q=searchInput.value.trim().toLowerCase();
   searchGrid.innerHTML='';
   if(!q){searchEmpty.style.display='block';searchEmpty.textContent='اكتب كلمة للبحث...';return;}
-  const results=allYouTubeVideos.filter(v=>v.title.toLowerCase().includes(q));
+  const results=allYouTubeVideos.filter(v=>(v.title||'').toLowerCase().includes(q));
   if(results.length===0){searchEmpty.style.display='block';searchEmpty.textContent='لا توجد نتائج مطابقة.';return;}
   searchEmpty.style.display='none';
   results.forEach((v,index)=>{
     const card=document.createElement('button');
     card.className='card';
-    card.innerHTML=`<div class="thumb-wrap"><img src="https://i.ytimg.com/vi/${v.id}/hqdefault.jpg" alt="${v.title}"><span class="duration">--:--</span></div><div class="card-title">${v.title}</div>`;
+    card.innerHTML=`<div class="thumb-wrap"><img src="https://i.ytimg.com/vi/${v.id}/hqdefault.jpg" alt=""><span class="duration">--:--</span></div><div class="card-title">${v.title||''}</div>`;
     card.onclick=()=>{const catVideos=getVideosForCat(v.cat);const realIndex=catVideos.findIndex(cv=>cv.id===v.id);openPlayer(catVideos,realIndex>=0?realIndex:index,true);};
     searchGrid.appendChild(card);
   });
@@ -430,7 +365,7 @@ searchInput.addEventListener('input',()=>{
 let playerOpen=false;
 function stopPlayback(){youtubeFrame.onload=null;youtubeFrame.src='about:blank';ytPoster.removeAttribute('src');ytPoster.style.display='none';}
 
-function openPlayer(videosList,index,pushHistory){
+function openPlayer(videosList,index,fromClick){
   const v=videosList[index];
   if(!v)return;
   ytPoster.src=`https://i.ytimg.com/vi/${v.id}/hqdefault.jpg`;
@@ -442,20 +377,21 @@ function openPlayer(videosList,index,pushHistory){
     if(ri===index)return;
     const rc=document.createElement('button');
     rc.className='related-card';
-    rc.innerHTML=`<div class="related-thumb"><img src="https://i.ytimg.com/vi/${rv.id}/hqdefault.jpg" alt="${rv.title}"></div><div class="related-title">${rv.title}</div>`;
-    rc.onclick=()=>openPlayer(videosList,ri,false);
+    rc.innerHTML=`<div class="related-thumb"><img src="https://i.ytimg.com/vi/${rv.id}/hqdefault.jpg" alt=""></div><div class="related-title">${rv.title||''}</div>`;
+    rc.onclick=()=>openPlayer(videosList,ri,true);
     relatedScroll.appendChild(rc);
+    if(!rv.title){fetchYouTubeTitle(rv.id).then(t=>{if(t){rv.title=t;rc.querySelector('.related-title').textContent=t;}});}
   });
   playerPage.style.display='block';
   playerPage.scrollTop=0;
   playerOpen=true;
+  if(fromClick){localStorage.setItem('activeVideoId',v.id);}
   setTimeout(()=>{
     let targetIndex=0,count=0;
     for(let i=0;i<videosList.length;i++){if(i===index){targetIndex=count;break;}count++;}
     const target=relatedScroll.children[targetIndex];
     if(target){const offset=target.offsetLeft-relatedScroll.offsetLeft-12;relatedScroll.scrollTo({left:offset,behavior:'auto'});}
   },50);
-  if(pushHistory){try{history.pushState({view:'player',index},'','#play='+index);}catch(e){}}
 }
 
 let isDown=false,startX,scrollLeft;
@@ -463,8 +399,8 @@ relatedScroll.addEventListener('mousedown',e=>{isDown=true;relatedScroll.classLi
 relatedScroll.addEventListener('mouseleave',()=>{isDown=false;relatedScroll.classList.remove('dragging');});
 relatedScroll.addEventListener('mouseup',()=>{isDown=false;relatedScroll.classList.remove('dragging');});
 relatedScroll.addEventListener('mousemove',e=>{if(!isDown)return;e.preventDefault();const x=e.pageX-relatedScroll.offsetLeft;const walk=(x-startX)*1.5;relatedScroll.scrollLeft=scrollLeft-walk;});
-closeBtn.onclick=()=>{playerPage.style.display='none';stopPlayback();playerOpen=false;};
-document.addEventListener('keydown',e=>{if(e.key==='Escape'&&playerOpen){playerPage.style.display='none';stopPlayback();playerOpen=false;}});
+closeBtn.onclick=()=>{playerPage.style.display='none';stopPlayback();playerOpen=false;localStorage.removeItem('activeVideoId');};
+document.addEventListener('keydown',e=>{if(e.key==='Escape'&&playerOpen){playerPage.style.display='none';stopPlayback();playerOpen=false;localStorage.removeItem('activeVideoId');}});
 window.addEventListener('pagehide',stopPlayback);
 window.addEventListener('beforeunload',stopPlayback);
 
@@ -476,8 +412,7 @@ function satBuildCards(){
   satGridEl.innerHTML='';
   for(var i=0;i+2<lines.length;i+=3){
     (function(name,image,video){
-      var a=document.createElement('a');
-      a.href='#';a.className='card-sat';
+      var a=document.createElement('a');a.href='#';a.className='card-sat';
       var img=document.createElement('img');img.src=image;img.alt=name;
       var title=document.createElement('div');title.className='card-title-sat';title.textContent=name;
       a.appendChild(img);a.appendChild(title);
@@ -489,10 +424,7 @@ function satBuildCards(){
 
 function satShowMsg(text){satMsgEl.textContent=text;satMsgEl.style.display='block';satRetryKidsBtn.hidden=!/^⚠/.test(text);}
 function satHideMsg(){satMsgEl.style.display='none';satMsgEl.textContent='';satRetryKidsBtn.hidden=true;}
-
 satRetryKidsBtn.addEventListener('click',function(){satFallbackCycle=0;if(!satActiveUrl)return;if(satKidsPlayerMode==='backup'){satPlayBackupVideo(satActiveUrl);}else{satPlayVideo(satActiveUrl);}});
-
-function satShowIframe(src){satVideoEl.style.display='none';var iframe=document.createElement('iframe');iframe.src=src;iframe.allow='autoplay; encrypted-media; picture-in-picture; fullscreen';iframe.allowFullscreen=true;satWrapEl.appendChild(iframe);}
 
 function satToYouTubeEmbed(url){var m;if((m=url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/|youtube\.com\/live\/|youtube\.com\/shorts\/)([A-Za-z0-9_-]{11})/))){return 'https://www.youtube.com/embed/'+m[1]+'?autoplay=1&rel=0';}return null;}
 function satToVimeoEmbed(url){var m=url.match(/vimeo\.com\/(?:video\/)?(\d+)/);if(m)return 'https://player.vimeo.com/video/'+m[1]+'?autoplay=1';return null;}
@@ -509,7 +441,6 @@ function satToOdyseeEmbed(url){var m=url.match(/odysee\.com\/.*[:/]([A-Za-z0-9]+
 function satToArchiveEmbed(url){var m=url.match(/archive\.org\/details\/([^\/\?]+)/);if(m)return 'https://archive.org/embed/'+m[1];return null;}
 function satToMp4UploadEmbed(url){var m=url.match(/mp4upload\.com\/(?:embed-)?([A-Za-z0-9]+)/);if(m)return 'https://www.mp4upload.com/embed-'+m[1]+'.html';return null;}
 function satToDoodEmbed(url){var m=url.match(/dood(?:stream|\.)?\.?(?:com|to|so|pm|watch|sh|re|la|ws|gs|life|yt|li|si|cf|wtf|best|cx|nu|vip)\/(?:e|d)\/([A-Za-z0-9]+)/i);if(m)return 'https://dood.to/e/'+m[1];return null;}
-function satToGenericIframe(url){return url;}
 
 function satIsHls(url){return /\.m3u8(\?.*)?$/i.test(url)||/format=m3u8/i.test(url);}
 function satIsDash(url){return /\.mpd(\?.*)?$/i.test(url)||/format=mpd/i.test(url);}
@@ -608,7 +539,27 @@ window.addEventListener('beforeunload',function(){satResetPlayers();});
 document.addEventListener('visibilitychange',function(){if(document.visibilityState==='hidden')satResetPlayers();});
 
 satBuildCards();
-setCategory('all');
+
+/* ===== التشغيل الأولي: البقاء على نفس التصنيف أو نفس الفيديو ===== */
+(function init(){
+  const savedCat=localStorage.getItem('activeCat')||'all';
+  const savedVideoId=localStorage.getItem('activeVideoId');
+  setCategory(savedCat);
+
+  if(savedVideoId){
+    // حاول إيجاد الفيديو في القسم النشط
+    const list=currentVideos;
+    const idx=list.findIndex(v=>v.id===savedVideoId);
+    if(idx>=0){
+      openPlayer(list,idx,false);
+    }else{
+      // ابحث في كل الفيديوهات
+      const all=getVideosForCat('all');
+      const ai=all.findIndex(v=>v.id===savedVideoId);
+      if(ai>=0)openPlayer(all,ai,false);
+    }
+  }
+})();
 </script>
 </body>
 </html>

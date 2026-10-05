@@ -8,19 +8,14 @@ from typing import List, Dict, Optional
 YOUTUBE_API_KEY = os.environ.get('YOUTUBE_API_KEY')
 FIREBASE_CONFIG_JSON = os.environ.get('FIREBASE_CONFIG')
 
-if FIREBASE_CONFIG_JSON:
-    firebase_config = json.loads(FIREBASE_CONFIG_JSON)
-    FIREBASE_DB_URL = firebase_config['databaseURL']
-else:
-    # Fallback to config.json for local testing
-    try:
-        with open('config.json', 'r', encoding='utf-8') as f:
-            config = json.load(f)
-        FIREBASE_DB_URL = config['firebase']['databaseURL']
-        if not YOUTUBE_API_KEY:
-            YOUTUBE_API_KEY = config['youtube']['apiKey']
-    except:
-        raise Exception("No Firebase config found in environment or config.json")
+if not YOUTUBE_API_KEY:
+    raise Exception("YOUTUBE_API_KEY not found in environment")
+
+if not FIREBASE_CONFIG_JSON:
+    raise Exception("FIREBASE_CONFIG not found in environment")
+
+firebase_config = json.loads(FIREBASE_CONFIG_JSON)
+FIREBASE_DB_URL = firebase_config['databaseURL']
 
 # Load channels
 with open('channels.txt', 'r', encoding='utf-8') as f:

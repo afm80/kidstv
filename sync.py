@@ -25,6 +25,9 @@ if not FIREBASE_DB_URL:
 
 FIREBASE_DB_URL = FIREBASE_DB_URL.rstrip('/')
 
+# الحد الأدنى لمدة الفيديو (بالثواني) — أقل من هذا يُعتبر Short ويُتجاهل
+MIN_DURATION_SECONDS = 60
+
 with open('channels.txt', 'r', encoding='utf-8') as f:
     CHANNELS = [line.strip() for line in f if line.strip() and not line.strip().startswith('#')]
 
@@ -110,13 +113,27 @@ def get_playlist_videos(playlist_id: str, max_results: int = 15) -> List[str]:
     return []
 
 
+def parse_iso_duration(duration: str) -> int:
+    """يحوّل PT1H2M3S إلى ثواني. يرجع 0 لو فشل."""
+    if not duration:
+        return 0
+    match = re.match(r'^PT(?:(\d+)H)?(?:(\d+)M)?(?:(\d+)S)?$', duration)
+    if not match:
+        return 0
+    h = int(match.group(1) or 0)
+    m = int(match.group(2) or 0)
+    s = int(match.group(3) or 0)
+    return h * 3600 + m * 60 + s
+
+
 def get_videos_details(video_ids: List[str]) -> Dict[str, Dict]:
+    """يجيب عنوان + نوع البث + المدة لكل فيديو. يستثني الشورتس (أقل من دقيقة) ما عدا البث المباشر."""
     result: Dict[str, Dict] = {}
     for i in range(0, len(video_ids), 50):
         chunk = video_ids[i:i + 50]
         url = (
             f"https://www.googleapis.com/youtube/v3/videos"
-            f"?part=snippet&id={','.join(chunk)}&key={YOUTUBE_API_KEY}"
+            f"?part=snippet,contentDetails&id={','.join(chunk)}&key={YOUTUBE_API_KEY}"
         )
         try:
             r = session.get(url, timeout=15)
@@ -125,13 +142,23 @@ def get_videos_details(video_ids: List[str]) -> Dict[str, Dict]:
                 continue
             for item in r.json().get('items', []):
                 vid = item['id']
-                snippet = item['snippet']
+                snippet = item.get('snippet', {})
+                content = item.get('contentDetails', {})
                 title = (snippet.get('title') or '').strip()
                 if not title:
                     title = f"فيديو {vid}"
+
+                is_live = snippet.get('liveBroadcastContent') == 'live'
+                duration_sec = parse_iso_duration(content.get('duration', ''))
+
+                # تجاهل الشورتس (أقل من دقيقة) — ما عدا البث المباشر
+                if not is_live and duration_sec > 0 and duration_sec < MIN_DURATION_SECONDS:
+                    print(f"[SKIP] Short ignored: {title}")
+                    continue
+
                 result[vid] = {
                     'title': title[:200],
-                    'isLive': snippet.get('liveBroadcastContent') == 'live',
+                    'isLive': is_live,
                 }
         except requests.RequestException as e:
             print(f"[ERROR] get_videos_details: {e}")
@@ -217,7 +244,6 @@ def sync():
     for vid in unique_candidates:
         info = details.get(vid)
         if not info:
-            print(f"[WARN] no details for {vid}")
             continue
 
         title = info['title']
@@ -228,8 +254,6 @@ def sync():
             if old_cat != category:
                 add_video_to_firebase(vid, title, category)
                 print(f"Updated category: {title} -> {category}")
-            else:
-                print(f"Skipped duplicate: {title}")
             continue
 
         add_video_to_firebase(vid, title, category)

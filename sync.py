@@ -3,7 +3,7 @@ import requests
 import re
 import os
 import time
-from typing import List, Dict, Optional
+from typing import List, Dict, Optional, Set
 
 YOUTUBE_API_KEY = os.environ.get('YOUTUBE_API_KEY')
 FIREBASE_DB_URL = os.environ.get('FIREBASE_DB_URL')
@@ -19,7 +19,6 @@ if not FIREBASE_DB_URL:
             FIREBASE_DB_URL = firebase_config.get('databaseURL')
         except Exception as e:
             print(f"[ERROR] parsing FIREBASE_CONFIG: {e}")
-
     if not FIREBASE_DB_URL:
         raise Exception("FIREBASE_DB_URL not found in environment")
 
@@ -73,7 +72,7 @@ def resolve_channel_id(value: str) -> Optional[str]:
                 return items[0]['id']
             print(f"[WARN] channel not found: {val}")
         else:
-            print(f"[ERROR] resolve_channel_id({val}): {r.status_code} {r.text[:200]}")
+            print(f"[ERROR] resolve_channel_id({val}): {r.status_code}")
     except requests.RequestException as e:
         print(f"[ERROR] resolve_channel_id({val}): {e}")
     return None
@@ -87,53 +86,49 @@ def get_uploads_playlist_id(channel_id: str) -> Optional[str]:
             items = r.json().get('items', [])
             if items:
                 return items[0]['contentDetails']['relatedPlaylists']['uploads']
-        else:
-            print(f"[ERROR] get_uploads_playlist_id({channel_id}): {r.status_code} {r.text[:200]}")
     except requests.RequestException as e:
-        print(f"[ERROR] get_uploads_playlist_id({channel_id}): {e}")
+        print(f"[ERROR] get_uploads_playlist_id: {e}")
     return None
 
 
-def get_playlist_videos(playlist_id: str, max_results: int = 10) -> List[str]:
+def get_playlist_videos(playlist_id: str, max_results: int = 10) -> List[Dict]:
+    """Returns list of {videoId, title} from playlistItems (works without videos.list)."""
     url = (
         f"https://www.googleapis.com/youtube/v3/playlistItems"
-        f"?part=contentDetails&playlistId={playlist_id}"
+        f"?part=snippet,contentDetails&playlistId={playlist_id}"
         f"&maxResults={max_results}&key={YOUTUBE_API_KEY}"
     )
     try:
         r = session.get(url, timeout=15)
         if r.status_code == 200:
-            return [item['contentDetails']['videoId'] for item in r.json().get('items', [])]
-        print(f"[ERROR] get_playlist_videos({playlist_id}): {r.status_code} {r.text[:200]}")
+            out = []
+            for item in r.json().get('items', []):
+                out.append({
+                    'videoId': item['contentDetails']['videoId'],
+                    'title': item['snippet'].get('title', 'Video from list'),
+                })
+            return out
+        print(f"[ERROR] get_playlist_videos: {r.status_code} {r.text[:200]}")
     except requests.RequestException as e:
-        print(f"[ERROR] get_playlist_videos({playlist_id}): {e}")
+        print(f"[ERROR] get_playlist_videos: {e}")
     return []
 
 
-def get_videos_details(video_ids: List[str]) -> Dict[str, Dict]:
-    """Fetch title + liveBroadcastContent for up to 50 videos per call."""
-    result: Dict[str, Dict] = {}
-    for i in range(0, len(video_ids), 50):
-        chunk = video_ids[i:i + 50]
-        url = (
-            f"https://www.googleapis.com/youtube/v3/videos"
-            f"?part=snippet&id={','.join(chunk)}&key={YOUTUBE_API_KEY}"
-        )
-        try:
-            r = session.get(url, timeout=15)
-            if r.status_code != 200:
-                print(f"[ERROR] get_videos_details: {r.status_code} {r.text[:200]}")
-                continue
-            for item in r.json().get('items', []):
-                vid = item['id']
-                snippet = item['snippet']
-                result[vid] = {
-                    'title': snippet.get('title', 'Video from list'),
-                    'isLive': snippet.get('liveBroadcastContent') == 'live',
-                }
-        except requests.RequestException as e:
-            print(f"[ERROR] get_videos_details: {e}")
-    return result
+def get_live_video_ids(channel_id: str) -> Set[str]:
+    """Returns set of currently-live video IDs for a channel using search.list."""
+    url = (
+        f"https://www.googleapis.com/youtube/v3/search"
+        f"?part=id&channelId={channel_id}&eventType=live&type=video"
+        f"&key={YOUTUBE_API_KEY}"
+    )
+    try:
+        r = session.get(url, timeout=15)
+        if r.status_code == 200:
+            return {item['id']['videoId'] for item in r.json().get('items', [])}
+        print(f"[ERROR] get_live_video_ids({channel_id}): {r.status_code} {r.text[:200]}")
+    except requests.RequestException as e:
+        print(f"[ERROR] get_live_video_ids: {e}")
+    return set()
 
 
 def get_existing_videos() -> Dict:
@@ -142,7 +137,6 @@ def get_existing_videos() -> Dict:
         r = session.get(url, timeout=15)
         if r.status_code == 200:
             return r.json() or {}
-        print(f"[ERROR] get_existing_videos: {r.status_code} {r.text[:200]}")
     except requests.RequestException as e:
         print(f"[ERROR] get_existing_videos: {e}")
     return {}
@@ -169,7 +163,7 @@ def delete_video_from_firebase(video_id: str):
     try:
         session.delete(url, timeout=15)
     except requests.RequestException as e:
-        print(f"[ERROR] delete_video_from_firebase({video_id}): {e}")
+        print(f"[ERROR] delete_video_from_firebase: {e}")
 
 
 def sync():
@@ -178,14 +172,15 @@ def sync():
     existing_videos = get_existing_videos()
     existing_ids = set(existing_videos.keys())
 
-    # Collect video IDs
-    manual_video_ids: List[str] = []
+    manual_videos: List[Dict] = []       # {videoId, title}
     channel_ids = set()
 
+    # Step 1: parse channels.txt
     for url in CHANNELS:
         vid = get_video_id(url)
         if vid:
-            manual_video_ids.append(vid)
+            # We'll fetch its title via playlist trick? No - store placeholder, resolve later
+            manual_videos.append({'videoId': vid, 'title': None})
             continue
         handle = get_channel_handle(url)
         if handle:
@@ -197,54 +192,46 @@ def sync():
         else:
             print(f"[WARN] unrecognized url: {url}")
 
-    # Gather candidate video IDs
-    candidates: List[str] = list(manual_video_ids)
+    # Step 2: collect videos from channels
+    channel_videos: List[Dict] = []       # {videoId, title, isLive}
     for channel_id in channel_ids:
+        # Live streams
+        live_ids = get_live_video_ids(channel_id)
+
+        # Recent uploads
         playlist_id = get_uploads_playlist_id(channel_id)
         if not playlist_id:
             continue
-        candidates.extend(get_playlist_videos(playlist_id, max_results=10))
+        uploads = get_playlist_videos(playlist_id, max_results=10)
 
-    # Dedupe while preserving order
-    seen = set()
-    unique_candidates = []
-    for vid in candidates:
-        if vid not in seen:
-            seen.add(vid)
-            unique_candidates.append(vid)
+        for v in uploads:
+            v['isLive'] = v['videoId'] in live_ids
+            channel_videos.append(v)
 
-    if not unique_candidates:
-        print("No candidate videos found.")
-        return
+        # Add live videos that are NOT in uploads (rare but possible)
+        upload_ids = {v['videoId'] for v in uploads}
+        for lid in live_ids - upload_ids:
+            channel_videos.append({'videoId': lid, 'title': 'Live stream', 'isLive': True})
 
-    # Fetch details (title + isLive) in bulk
-    details = get_videos_details(unique_candidates)
-
-    added_count = 0
-    for vid in unique_candidates:
-        info = details.get(vid)
-        if not info:
-            print(f"[WARN] no details for {vid}")
-            continue
-
-        title = info['title']
-        category = 'live' if info['isLive'] else 'videos'
+    # Step 3: process channel videos
+    added = 0
+    for v in channel_videos:
+        vid = v['videoId']
+        title = v['title'] or 'Video from list'
+        category = 'live' if v.get('isLive') else 'videos'
 
         if vid in existing_ids:
-            # If category changed, update it
             old_cat = existing_videos.get(vid, {}).get('categoryId')
             if old_cat != category:
                 add_video_to_firebase(vid, title, category)
-                print(f"Updated category: {title} -> {category}")
-            else:
-                print(f"Skipped duplicate: {title}")
+                print(f"Updated: {title} -> {category}")
             continue
 
         add_video_to_firebase(vid, title, category)
-        added_count += 1
+        added += 1
         print(f"Added: {title} ({category})")
 
-    print(f"Sync completed! Added: {added_count}")
+    print(f"Sync completed! Added: {added}")
 
 
 if __name__ == "__main__":

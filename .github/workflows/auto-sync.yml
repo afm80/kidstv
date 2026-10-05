@@ -26,6 +26,6 @@ jobs:
     - name: Run sync script
       env:
         YOUTUBE_API_KEY: ${{ secrets.YOUTUBE_API_KEY }}
-        FIREBASE_CONFIG: ${{ secrets.FIREBASE_CONFIG }}
+        FIREBASE_DB_URL: ${{ secrets.FIREBASE_DB_URL }}
       run: |
         python sync.py

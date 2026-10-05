@@ -32,6 +32,14 @@ with open('channels.txt', 'r', encoding='utf-8') as f:
     CHANNELS = [line.strip() for line in f if line.strip() and not line.strip().startswith('#')]
 
 session = requests.Session()
+try:
+    from requests.adapters import HTTPAdapter
+    from urllib3.util.retry import Retry
+    _retry = Retry(total=3, backoff_factor=1, status_forcelist=(429, 500, 502, 503, 504),
+                   allowed_methods=frozenset(['GET', 'PUT']))
+    session.mount('https://', HTTPAdapter(max_retries=_retry))
+except Exception:
+    pass
 
 
 def get_video_id(url: str) -> Optional[str]:
@@ -148,7 +156,12 @@ def get_videos_details(video_ids: List[str]) -> Dict[str, Dict]:
                 if not title:
                     title = f"فيديو {vid}"
 
-                is_live = snippet.get('liveBroadcastContent') == 'live'
+                broadcast = snippet.get('liveBroadcastContent')
+                # البث المجدول الذي لم يبدأ بعد لا يمكن تشغيله، يُتجاهل حتى يبدأ
+                if broadcast == 'upcoming':
+                    print(f"[SKIP] Upcoming stream ignored: {title}")
+                    continue
+                is_live = broadcast == 'live'
                 duration_sec = parse_iso_duration(content.get('duration', ''))
 
                 # تجاهل الشورتس (أقل من دقيقة) — ما عدا البث المباشر
@@ -177,7 +190,7 @@ def get_existing_videos() -> Dict:
     return {}
 
 
-def add_video_to_firebase(video_id: str, title: str, category: str):
+def add_video_to_firebase(video_id: str, title: str, category: str, created_at: Optional[int] = None):
     url = f"{FIREBASE_DB_URL}/videos/{video_id}.json"
     if not title or not title.strip():
         title = f"فيديو {video_id}"
@@ -186,7 +199,7 @@ def add_video_to_firebase(video_id: str, title: str, category: str):
         'videoId': video_id,
         'categoryId': category,
         'title': title,
-        'createdAt': int(time.time() * 1000),
+        'createdAt': int(created_at) if created_at else int(time.time() * 1000),
     }
     try:
         r = session.put(url, json=data, timeout=15)
@@ -252,7 +265,8 @@ def sync():
         if vid in existing_ids:
             old_cat = existing_videos.get(vid, {}).get('categoryId')
             if old_cat != category:
-                add_video_to_firebase(vid, title, category)
+                old_created = existing_videos.get(vid, {}).get('createdAt')
+                add_video_to_firebase(vid, title, category, old_created)
                 print(f"Updated category: {title} -> {category}")
             continue
 

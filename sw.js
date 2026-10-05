@@ -1,10 +1,13 @@
-const CACHE_NAME = 'kids-tv-cache-v3';
-const ASSETS = ['./', './index.html', './kids-tv.png', './manifest.json', './firebase-config.js'];
+const CACHE_NAME = 'kids-tv-cache-v7';
+const ASSETS = ['./', './index.html', './kids-tv.png', './icon-192.png', './icon-512.png', './manifest.json', './firebase-config.js'];
 
 self.addEventListener('install', function (event) {
   event.waitUntil(
     caches.open(CACHE_NAME).then(function (cache) {
-      return cache.addAll(ASSETS);
+      // لا يفشل التثبيت كله إذا تعذّر تخزين ملف واحد
+      return Promise.all(ASSETS.map(function (url) {
+        return cache.add(url).catch(function () {});
+      }));
     })
   );
   self.skipWaiting();
@@ -18,32 +21,51 @@ self.addEventListener('activate', function (event) {
           .filter(function (key) { return key !== CACHE_NAME; })
           .map(function (key) { return caches.delete(key); })
       );
-    })
+    }).then(function () { return self.clients.claim(); })
   );
-  self.clients.claim();
 });
 
-self.addEventListener('fetch', function (event) {
-  if (event.request.method !== 'GET') return;
-  var requestUrl;
-  try{requestUrl=new URL(event.request.url);}catch(e){return;}
-  if(requestUrl.origin!==self.location.origin)return;
+function isCodeRequest(request, url) {
+  if (request.mode === 'navigate') return true;
+  return /\.(?:html|js|json)$/i.test(url.pathname) || url.pathname.endsWith('/');
+}
 
-  event.respondWith(
-    caches.match(event.request).then(function (cached) {
-      return cached || fetch(event.request).then(function (response) {
-        if(response.ok){
+self.addEventListener('fetch', function (event) {
+  const request = event.request;
+  if (request.method !== 'GET') return;
+  var url;
+  try { url = new URL(request.url); } catch (e) { return; }
+  if (url.origin !== self.location.origin) return;
+
+  if (isCodeRequest(request, url)) {
+    // الشبكة أولاً حتى تصل التحديثات فوراً، والكاش عند انقطاع الاتصال
+    event.respondWith(
+      fetch(request).then(function (response) {
+        if (response && response.ok) {
           const cloned = response.clone();
-          caches.open(CACHE_NAME).then(function (cache) {
-            cache.put(event.request, cloned);
-          });
+          caches.open(CACHE_NAME).then(function (cache) { cache.put(request, cloned); }).catch(function () {});
         }
         return response;
       }).catch(function () {
-        if (event.request.mode === 'navigate') return caches.match('./index.html');
-        return caches.match(event.request).then(function (cachedResponse) {
-          return cachedResponse || new Response('', { status: 503, statusText: 'Offline' });
+        return caches.match(request).then(function (cached) {
+          return cached || caches.match('./index.html') || new Response('', { status: 503, statusText: 'Offline' });
         });
+      })
+    );
+    return;
+  }
+
+  // الصور والملفات الثابتة: الكاش أولاً
+  event.respondWith(
+    caches.match(request).then(function (cached) {
+      return cached || fetch(request).then(function (response) {
+        if (response && response.ok) {
+          const cloned = response.clone();
+          caches.open(CACHE_NAME).then(function (cache) { cache.put(request, cloned); }).catch(function () {});
+        }
+        return response;
+      }).catch(function () {
+        return new Response('', { status: 503, statusText: 'Offline' });
       });
     })
   );

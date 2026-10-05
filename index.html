@@ -2,7 +2,7 @@
 <html lang="ar" dir="rtl">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>تلفزيون الأطفال</title>
 <meta name="theme-color" content="#0f0f3d">
 <meta name="mobile-web-app-capable" content="yes">
@@ -57,7 +57,7 @@ if ('serviceWorker' in navigator) {
 })();
 </script>
 <link rel="stylesheet" href="https://vjs.zencdn.net/8.10.0/video-js.min.css">
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/dplayer@latest/dist/DPlayer.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/dplayer@1/dist/DPlayer.min.css">
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap');
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
@@ -190,9 +190,119 @@ html,body{margin:0;padding:0;width:100%;font-family:'Cairo',sans-serif;backgroun
 #searchInput{width:100%;padding:12px 16px;border-radius:12px;border:1px solid rgba(255,255,255,.2);background:#1c1c5c;color:#fff;font-family:inherit;font-size:14px;font-weight:700;outline:none;box-sizing:border-box;}
 #searchInput::placeholder{color:#888;}
 #searchEmpty{text-align:center;color:#888;padding:40px 20px;font-size:14px;}
+
+/* ===== Mobile / PWA fixes ===== */
+html{-webkit-text-size-adjust:100%;text-size-adjust:100%;overflow-x:hidden;}
+body{overflow-x:hidden;min-height:100vh;min-height:100dvh;max-width:100vw;overscroll-behavior-y:none;padding-bottom:env(safe-area-inset-bottom,0px);}
+img{max-width:100%;}
+.header-bar{padding-top:env(safe-area-inset-top,0px);width:100%;}
+.header-top,.cats-bar{padding-left:max(10px,env(safe-area-inset-left,0px));padding-right:max(10px,env(safe-area-inset-right,0px));}
+.cats-bar{width:100%;overflow:hidden;}
+.cats{width:100%;max-width:100%;-webkit-overflow-scrolling:touch;overscroll-behavior-x:contain;scroll-snap-type:x proximity;padding-bottom:2px;}
+.cat{scroll-snap-align:start;min-height:36px;}
+.grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;padding:10px max(10px,env(safe-area-inset-left,0px)) calc(16px + env(safe-area-inset-bottom,0px));width:100%;}
+.card{min-width:0;width:100%;overflow:hidden;}
+.card-title{overflow-wrap:anywhere;word-break:break-word;}
+@media (min-width:600px){.grid{grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;}}
+@media (min-width:900px){.grid{grid-template-columns:repeat(4,minmax(0,1fr));}}
+@media (min-width:1200px){.grid{grid-template-columns:repeat(5,minmax(0,1fr));max-width:1600px;margin:0 auto;}}
+@media (max-width:360px){.grid{gap:8px;padding:8px;}.card{padding:4px;border-radius:12px;}.card-title{font-size:12px;}}
+#searchPage{padding:12px max(12px,env(safe-area-inset-left,0px));}
+#ourLivePage{height:calc(100vh - 110px);height:calc(100dvh - 110px);}
+#playerPage{min-height:100vh;min-height:100dvh;}
+.player-top{margin-top:env(safe-area-inset-top,0px);}
+.close-btn{top:calc(12px + env(safe-area-inset-top,0px) * 0);width:38px;height:38px;}
+.related{padding-bottom:calc(30px + env(safe-area-inset-bottom,0px));}
+#satContent .grid-sat{grid-template-columns:repeat(auto-fill,minmax(100px,1fr));gap:12px;padding:12px;}
+#satContent .card-sat{width:100%;}
+#satPlayer{padding:10px;margin:10px auto;}
+
+/* =====================================================
+   تصميم يشبه YouTube Kids — للهاتف (واجهة فقط)
+   ===================================================== */
+:root{--nav-h:64px;--header-h:128px;--c-bg:#0b0d3a;--c-card:#07071a;--c-pill:rgba(255,255,255,.12);--c-accent:#ff6600;--sat-b:env(safe-area-inset-bottom,0px);--sat-t:env(safe-area-inset-top,0px);}
+html{background:#0b0d3a;}
+body{background:transparent;padding-bottom:calc(var(--nav-h) + var(--sat-b));}
+body::before{content:"";position:fixed;inset:0;z-index:-1;background:linear-gradient(180deg,#0a0c35 0%,#10176f 55%,#1a2bc4 100%);}
+body.in-player{padding-bottom:0;}
+
+/* الرأس */
+.header-bar{background:rgba(10,12,53,.94);-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px);}
+.header-actions{display:none;}
+.header-top{padding-top:10px;padding-bottom:4px;min-height:54px;}
+.header-logo{height:36px;}
+.cats-bar{background:transparent;padding-top:4px;padding-bottom:12px;}
+.cats{gap:8px;padding:2px 2px 4px;}
+.cat{background:var(--c-pill);border:1px solid rgba(255,255,255,.08);border-radius:16px;min-height:46px;padding:8px 16px;font-size:14px;gap:8px;transition:transform .15s ease,background .2s ease;}
+.cat:active{transform:scale(.96);}
+.cat .ico{width:24px;height:24px;}
+.cat.active{background:#fff;color:#0b0d3a;box-shadow:0 4px 14px rgba(0,0,0,.25);}
+.cat.active .ico{color:#0b0d3a;}
+@media (max-width:600px){.cat{font-size:13px;padding:8px 14px;min-height:44px;gap:7px;}.cat .ico{width:22px;height:22px;}}
+@media (max-width:450px){.cat{font-size:13px;padding:8px 13px;gap:6px;}.cat .ico{width:21px;height:21px;}}
+@media (max-width:360px){.cat{font-size:12px;padding:7px 11px;min-height:42px;}.cat .ico{width:19px;height:19px;}}
+.cats-bar{position:relative;}
+.cats-bar::after{content:"";position:absolute;top:0;bottom:0;left:0;width:22px;pointer-events:none;background:linear-gradient(90deg,rgba(10,12,53,.95),rgba(10,12,53,0));}
+
+/* الكروت */
+.grid{gap:12px;padding-top:12px;}
+.card{background:var(--c-card);border-radius:18px;padding:6px;box-shadow:0 6px 16px rgba(0,0,10,.35);transition:transform .15s ease;}
+.card:active{transform:scale(.97);}
+.thumb-wrap{border-radius:13px;}
+.card-title{font-size:13.5px;padding:9px 4px 6px 26px;min-height:46px;}
+.fav-btn{width:34px;height:34px;}
+.fav-btn::after{content:"";position:absolute;inset:-6px;}
+.fav-btn svg{width:18px;height:18px;}
+.related-card .fav-btn{width:30px;height:30px;}
+.card-sat .fav-btn{width:30px;height:30px;}
+.fav-empty{color:#cfd2ff;font-size:15px;padding:56px 16px;}
+.views-pill{font-size:11px;padding:2px 7px;border-radius:6px;}
+
+/* هياكل التحميل */
+#skeletonGrid{display:none;}
+body.is-loading #channelsGrid{display:none;}
+body.is-loading #skeletonGrid{display:grid;}
+.sk-card{background:var(--c-card);border-radius:18px;padding:6px;overflow:hidden;}
+.sk-thumb,.sk-line{position:relative;overflow:hidden;background:#1b1d52;}
+.sk-thumb{width:100%;aspect-ratio:16/9;border-radius:13px;}
+.sk-line{height:12px;border-radius:6px;margin:12px 6px 0;}
+.sk-line.short{width:55%;margin-bottom:12px;}
+.sk-thumb::after,.sk-line::after{content:"";position:absolute;inset:0;transform:translateX(-100%);background:linear-gradient(90deg,transparent,rgba(255,255,255,.12),transparent);animation:skShimmer 1.3s infinite;}
+@keyframes skShimmer{100%{transform:translateX(100%);}}
+@media (prefers-reduced-motion:reduce){.sk-thumb::after,.sk-line::after{animation:none;}}
+
+/* الشريط السفلي */
+.bottom-nav{position:fixed;left:0;right:0;bottom:0;z-index:45;height:calc(var(--nav-h) + var(--sat-b));padding:6px max(8px,env(safe-area-inset-left,0px)) var(--sat-b) max(8px,env(safe-area-inset-right,0px));display:flex;align-items:stretch;justify-content:space-around;gap:4px;background:rgba(8,9,40,.96);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);border-top:1px solid rgba(255,255,255,.1);}
+body.in-player .bottom-nav{display:none;}
+.nav-btn{flex:1 1 0;min-width:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;background:none;border:none;color:#aab0ee;font-family:inherit;font-size:12px;font-weight:700;border-radius:14px;cursor:pointer;padding:4px 2px;transition:color .2s ease,background .2s ease,transform .15s ease;}
+.nav-btn svg{width:26px;height:26px;display:block;fill:none;stroke:currentColor;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round;}
+.nav-btn:active{transform:scale(.94);}
+.nav-btn.active{color:#fff;background:rgba(255,255,255,.12);}
+.nav-btn.active svg{stroke-width:2.3;}
+.nav-btn[data-nav="home"].active svg{fill:rgba(255,255,255,.25);}
+.nav-btn[data-nav="favorites"].active svg{fill:#ffb400;stroke:#ffb400;}
+
+/* الصفحات الأخرى */
+#ourLivePage{height:calc(100vh - var(--header-h) - var(--nav-h) - var(--sat-b));height:calc(100dvh - var(--header-h) - var(--nav-h) - var(--sat-b));}
+#ourLiveFrame{background:transparent;}
+#searchInput{min-height:50px;border-radius:26px;padding:12px 20px;font-size:16px;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.18);}
+#searchInput::placeholder{color:#b9bdf0;}
+#searchEmpty{color:#cfd2ff;}
+#satContent{background:transparent;}
+#satContent .card-sat{background:var(--c-card);box-shadow:0 6px 16px rgba(0,0,10,.35);border-radius:16px;padding:8px;}
+#satContent .card-sat img{border-radius:12px;background:#fff;}
+#satContent .card-title-sat{color:#fff;font-size:12px;margin-top:8px;}
+.card-sat .fav-btn{background:rgba(0,0,0,.55);}
+.card-sat .fav-btn svg{stroke:#fff;}
+#satPlayer .video-wrap{border-radius:16px;}
+#satPlayer .player-controls select,#satPlayer .quality-button,#satPlayer .quality-toggle,#satPlayer .player-switch{min-height:42px;border-radius:12px;}
+#playerPage{background:#000;}
+.close-btn{width:42px;height:42px;font-size:18px;}
+.related h3{font-size:15px;}
+.related-card{background:var(--c-card);border-radius:14px;}
 </style>
 </head>
-<body>
+<body class="is-loading">
 
 <div id="splashScreen" role="status" aria-live="polite">
   <img id="splashLogo" src="./kids-tv.png" alt="تلفزيون الأطفال" onerror="this.style.display='none';">
@@ -241,7 +351,7 @@ html,body{margin:0;padding:0;width:100%;font-family:'Cairo',sans-serif;backgroun
   </div>
 </div>
 
-<div id="normalPage"><div class="grid" id="channelsGrid"></div></div>
+<div id="normalPage"><div class="grid" id="channelsGrid"></div><div class="grid" id="skeletonGrid" aria-hidden="true"><div class="sk-card"><div class="sk-thumb"></div><div class="sk-line"></div><div class="sk-line short"></div></div><div class="sk-card"><div class="sk-thumb"></div><div class="sk-line"></div><div class="sk-line short"></div></div><div class="sk-card"><div class="sk-thumb"></div><div class="sk-line"></div><div class="sk-line short"></div></div><div class="sk-card"><div class="sk-thumb"></div><div class="sk-line"></div><div class="sk-line short"></div></div><div class="sk-card"><div class="sk-thumb"></div><div class="sk-line"></div><div class="sk-line short"></div></div><div class="sk-card"><div class="sk-thumb"></div><div class="sk-line"></div><div class="sk-line short"></div></div><div class="sk-card"><div class="sk-thumb"></div><div class="sk-line"></div><div class="sk-line short"></div></div><div class="sk-card"><div class="sk-thumb"></div><div class="sk-line"></div><div class="sk-line short"></div></div></div></div>
 
 <div id="searchPage">
   <input type="text" id="searchInput" placeholder="ابحث عن فيديو...">
@@ -254,6 +364,7 @@ html,body{margin:0;padding:0;width:100%;font-family:'Cairo',sans-serif;backgroun
     <div id="satPlayer">
       <div class="video-wrap" id="satVideoWrap">
         <video id="satVideoEl" controls autoplay playsinline></video>
+        <button class="close-btn" id="satCloseBtn" type="button" aria-label="إغلاق">✕</button>
         <div class="player-loader" id="satPlayerLoader"><div class="splash-spinner"></div><div>جاري تشغيل القناة...</div></div>
         <div class="player-failure" id="satPlayerFailure"><p>⚠ تعذر تشغيل القناة حالياً.</p><button type="button" id="satRetryLoaderBtn">إعادة المحاولة</button></div>
       </div>
@@ -342,6 +453,13 @@ https://w.shahidtv.net/live/34682514/73347194/62.m3u8
   </div>
 </div>
 
+<nav class="bottom-nav" id="bottomNav" aria-label="التنقل الرئيسي">
+  <button type="button" class="nav-btn active" data-nav="home" aria-label="الصفحة الرئيسية"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3.5 11 12 3.5 20.5 11v8.5a1 1 0 0 1-1 1H15v-6H9v6H4.5a1 1 0 0 1-1-1z"/></svg><span>الصفحة الرئيسية</span></button>
+  <button type="button" class="nav-btn" data-nav="search" aria-label="بحث"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m15.5 15.5 5 5"/></svg><span>بحث</span></button>
+  <button type="button" class="nav-btn" data-nav="favorites" aria-label="المفضلة"><svg viewBox="0 0 24 24" aria-hidden="true"><polygon points="12 2.8 14.9 8.8 21.5 9.7 16.7 14.3 17.9 20.9 12 17.7 6.1 20.9 7.3 14.3 2.5 9.7 9.1 8.8 12 2.8"/></svg><span>المفضلة</span></button>
+</nav>
+
+
 <script>
 /* =====================================================
    طريقة إضافة الروابط:
@@ -428,6 +546,7 @@ function showPlayerFailure(kind,msg,retryCb){
 }
 
 /* ===== Favorites ===== */
+function escapeHtml(t){return String(t==null?'':t).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');}
 var FAV_YT_KEY='fav_yt_v1';
 var FAV_SAT_KEY='fav_sat_v1';
 function loadFav(key){try{var raw=localStorage.getItem(key);return raw?JSON.parse(raw):[];}catch(e){return [];}}
@@ -479,16 +598,18 @@ function formatViews(n){
   return n+' مشاهدة';
 }
 var metaQueue={};
+var metaFail={};
+var titleFail={};
 function fetchYouTubeMeta(videoId){
   videoId=String(videoId||'');
   if(!videoId)return Promise.resolve(null);
   if(metaCache[videoId]!==undefined)return Promise.resolve(metaCache[videoId]||null);
+  if(metaFail[videoId]&&Date.now()-metaFail[videoId]<300000)return Promise.resolve(null);
   if(metaQueue[videoId])return metaQueue[videoId];
   var p=new Promise(function(resolve){
     var url='https://noembed.com/embed?url=https%3A%2F%2Fwww.youtube.com%2Fwatch%3Fv%3D'+encodeURIComponent(videoId);
     var timeout=setTimeout(function(){
-      metaCache[videoId]=null;
-      saveMetaCache(metaCache);
+      metaFail[videoId]=Date.now();
       resolve(null);
     },5000);
     fetch(url,{method:'GET',cache:'no-store'}).then(function(r){
@@ -503,8 +624,7 @@ function fetchYouTubeMeta(videoId){
       resolve(out);
     }).catch(function(){
       clearTimeout(timeout);
-      metaCache[videoId]=null;
-      saveMetaCache(metaCache);
+      metaFail[videoId]=Date.now();
       resolve(null);
     });
   });
@@ -670,12 +790,12 @@ var titleCache=loadTitleCache();
 function fetchYouTubeTitle(videoId){
   return Promise.resolve(fetchYouTubeMeta(videoId)).then(function(m){
     if(m&&m.title){return m.title;}
-    if(titleCache[videoId]!==undefined){return titleCache[videoId];}
+    if(titleCache[videoId]){return titleCache[videoId];}
+    if(titleFail[videoId]&&Date.now()-titleFail[videoId]<300000){return null;}
     return new Promise(function(resolve){
       var api='https://www.youtube.com/oembed?url=https://www.youtube.com/watch?v='+videoId+'&format=json';
       var timeout=setTimeout(function(){
-        titleCache[videoId]=null;
-        saveTitleCache(titleCache);
+        titleFail[videoId]=Date.now();
         resolve(null);
       },5000);
       fetch(api).then(function(r){
@@ -684,13 +804,11 @@ function fetchYouTubeTitle(videoId){
       }).then(function(data){
         clearTimeout(timeout);
         var t=(data&&data.title)?data.title:null;
-        titleCache[videoId]=t;
-        saveTitleCache(titleCache);
+        if(t){titleCache[videoId]=t;saveTitleCache(titleCache);}else{titleFail[videoId]=Date.now();}
         resolve(t);
       }).catch(function(){
         clearTimeout(timeout);
-        titleCache[videoId]=null;
-        saveTitleCache(titleCache);
+        titleFail[videoId]=Date.now();
         resolve(null);
       });
     });
@@ -763,10 +881,12 @@ function renderPublishedCategories(){
       button.addEventListener('click',function(){if(link){window.open(link,'_blank','noopener,noreferrer');return;}setCategory(categoryId);});
       catsBar.appendChild(button);
     });
+    try{var ac=localStorage.getItem('activeCat');if(ac){[].slice.call(catsBar.querySelectorAll('.cat')).forEach(function(b){b.classList.toggle('active',b.getAttribute('data-cat')===ac);});}}catch(z){}
   }catch(e){try{console.warn('تعذر عرض التصنيفات المنشورة',e);}catch(z){}}
 }
 
 function applyPublishedContent(){
+  try{document.body.classList.remove('is-loading');}catch(e){}
   try{
     categories={live:builtInCategories.live.slice(),videos:builtInCategories.videos.slice()};
     publishedCategoryDocs.forEach(function(category){categories['custom_'+category.id]=[];});
@@ -824,7 +944,7 @@ function renderFavoritesPage(){
       for(var yi=0;yi<ytFavs.length;yi++){(function(v,index){
         var card=document.createElement('button');
         card.className='card';
-        card.innerHTML=buildYTThumbWrap(v,false)+'<div class="card-title">'+(v.title||'')+'</div>';
+        card.innerHTML=buildYTThumbWrap(v,false)+'<div class="card-title">'+escapeHtml(v.title||'')+'</div>';
         card.onclick=function(){var catVideos=getVideosForCat(v.cat);var realIndex=-1;for(var k=0;k<catVideos.length;k++){if(catVideos[k].id===v.id){realIndex=k;break;}}openPlayer(catVideos,realIndex>=0?realIndex:index,true);};
         grid.appendChild(card);
         addYTFrameMetaCard(card,v,false);
@@ -860,13 +980,26 @@ function renderGrid(){
     for(var i=0;i<currentVideos.length;i++){(function(v,index){
       var card=document.createElement('button');
       card.className='card';
-      card.innerHTML=buildYTThumbWrap(v,false)+'<div class="card-title">'+(v.title||'')+'</div>';
+      card.innerHTML=buildYTThumbWrap(v,false)+'<div class="card-title">'+escapeHtml(v.title||'')+'</div>';
       card.onclick=function(){openPlayer(currentVideos,index,true);};
       grid.appendChild(card);
       addYTFrameMetaCard(card,v,false);
       if(!v.title){fetchYouTubeTitle(v.id).then(function(t){if(t){v.title=t;var el=card.querySelector('.card-title');if(el)el.textContent=t;}}).catch(function(){});}
     })(currentVideos[i],i);}
   }catch(err){try{if(window.__showAppError)window.__showAppError('خطأ renderGrid',String(err.message||err));}catch(z){}grid.innerHTML='<div class="fav-empty">تعذر عرض المحتوى. حدث الخطأ: '+(err&&err.message?err.message:err)+'</div>';}
+}
+
+function ensureYoutubeFrame(){
+  if(youtubeFrame&&youtubeFrame.parentNode)return youtubeFrame;
+  var f=document.createElement('iframe');
+  f.id='youtubeFrame';
+  f.setAttribute('allow','autoplay; encrypted-media; fullscreen');
+  f.setAttribute('allowfullscreen','');
+  var top=document.querySelector('#playerPage .player-top');
+  var closeEl=document.getElementById('closeBtn');
+  if(top){if(closeEl&&closeEl.parentNode===top)top.insertBefore(f,closeEl);else top.appendChild(f);}
+  youtubeFrame=f;
+  return f;
 }
 
 function stopPlayback(){
@@ -885,32 +1018,47 @@ function stopPlayback(){
   try{if(ytPlayerFailure)ytPlayerFailure.classList.remove('show');}catch(e){}
   try{if(satPlayerLoader)satPlayerLoader.classList.remove('show');}catch(e){}
   try{if(satPlayerFailure)satPlayerFailure.classList.remove('show');}catch(e){}
-  if(ourLiveFrame){
-    try{ourLiveFrame.removeAttribute('src');}catch(e){}
-    try{ourLiveFrame.src='about:blank';}catch(e){}
-  }
+  stopLiveFrame();
+}
+
+/* إيقاف إطار البث المباشر نهائياً (تفريغ الصفحة الداخلية ثم استبدال العنصر بآخر فارغ) */
+function killIframe(frame){
+  if(!frame)return frame;
+  var cur='';try{cur=frame.getAttribute('src')||'';}catch(e){}
+  if(!cur||cur==='about:blank')return frame;
+  try{
+    var d=frame.contentWindow&&frame.contentWindow.document;
+    if(d){d.querySelectorAll('video,audio,iframe').forEach(function(m){try{if(m.pause){m.pause();m.muted=true;}m.removeAttribute('src');if(m.load)m.load();}catch(z){}});}
+  }catch(e){}
+  try{frame.contentWindow.stop();}catch(e){}
+  try{frame.src='about:blank';}catch(e){}
+  var fresh=frame.cloneNode(false);
+  try{fresh.setAttribute('src','about:blank');}catch(e){}
+  try{if(frame.parentNode){frame.parentNode.replaceChild(fresh,frame);return fresh;}}catch(e){}
+  return frame;
+}
+function stopLiveFrame(){
+  try{ourLiveFrame=killIframe(ourLiveFrame);}catch(e){}
+}
+function pauseYouTube(){
+  try{if(youtubeFrame&&youtubeFrame.contentWindow){youtubeFrame.contentWindow.postMessage('{"event":"command","func":"pauseVideo","args":""}','*');}}catch(e){}
+}
+function stopSatPlayback(){
+  try{satResetPlayers();}catch(e){}
+  try{satEnsureKidsVideo();}catch(e){}
+  try{satActiveUrl='';}catch(e){}
+  try{var sp=document.getElementById('satPlayer');if(sp)sp.style.display='none';}catch(e){}
+  try{if(satGridEl)satGridEl.style.display='';}catch(e){}
 }
 
 function stopAllMedia(){
   stopPlayback();
-  try{satResetPlayers&&satResetPlayers();}catch(e){}
-  document.querySelectorAll('video,audio,iframe').forEach(function(el){
-    try{
-      if(el.tagName==='VIDEO'||el.tagName==='AUDIO'){
-        el.pause();
-        el.muted=true;
-        el.volume=0;
-        el.removeAttribute('src');
-        try{el.load();}catch(z){}
-        try{el.parentNode.removeChild(el);}catch(z){}
-      }
-      else if(el.tagName==='IFRAME'){
-        el.removeAttribute('src');
-        el.setAttribute('src','about:blank');
-        try{el.parentNode.removeChild(el);}catch(z){}
-      }
-    }catch(z){}
-  });
+  stopSatPlayback();
+  try{
+    document.querySelectorAll('video,audio').forEach(function(el){
+      try{el.pause();el.removeAttribute('src');el.load();}catch(z){}
+    });
+  }catch(e){}
 }
 
 function hideAllPages(){
@@ -921,10 +1069,7 @@ function hideAllPages(){
   ourLivePage.style.display='none';
   searchPage.style.display='none';
   playerPage.style.display='none';
-  if(ourLiveFrame){
-    try{ourLiveFrame.removeAttribute('src');}catch(e){}
-    try{ourLiveFrame.src='about:blank';}catch(e){}
-  }
+  stopLiveFrame();
 }
 
 function setCategory(cat){
@@ -937,7 +1082,7 @@ function setCategory(cat){
     hideAllPages();
     if(cat==='sat'){try{satPage.classList.add('active');}catch(e){}satPage.style.display='block';try{window.scrollTo({top:0,behavior:'auto'});}catch(e){}loadSatLibraries().then(function(){try{satBuildCards();}catch(e2){if(window.__showAppError)window.__showAppError('خطأ satBuildCards',String(e2.message||e2));}}).catch(function(e){if(window.__showAppError)window.__showAppError('فشل تحميل مكتبات المشغلات',String(e.message||e));});return;}
     if(cat==='kidsgames'){stopAllMedia();try{window.open('https://www.crazygames.com','_blank');}catch(e){}var fallback='all';try{[].slice.call(catsBar.querySelectorAll('.cat')).forEach(function(btn){btn.classList.toggle('active',btn.getAttribute('data-cat')===fallback);});}catch(e){}try{localStorage.setItem('activeCat',fallback);}catch(e){}normalPage.style.display='block';currentVideos=getVideosForCat(fallback);renderGrid();try{window.scrollTo({top:0,behavior:'auto'});}catch(e){}return;}
-    if(cat==='ourlive'){ourLivePage.style.display='block';if(ourLiveFrame.src==='about:blank'){ourLiveFrame.src='https://afm80.github.io/kidstvlive/';}goSubStateIfNeeded('ourlive');try{window.scrollTo({top:0,behavior:'auto'});}catch(e){}return;}
+    if(cat==='ourlive'){ourLivePage.style.display='block';if(!ourLiveFrame.parentNode){ourLivePage.appendChild(ourLiveFrame);}if(!ourLiveFrame.getAttribute('src')||ourLiveFrame.getAttribute('src')==='about:blank'){ourLiveFrame.src='https://afm80.github.io/kidstvlive/';}goSubStateIfNeeded('ourlive');try{window.scrollTo({top:0,behavior:'auto'});}catch(e){}return;}
     if(cat==='search'){searchPage.style.display='block';try{searchInput.value='';}catch(e){}searchGrid.innerHTML='';searchEmpty.style.display='block';searchEmpty.textContent='اكتب كلمة للبحث...';goSubStateIfNeeded('search');try{window.scrollTo({top:0,behavior:'auto'});}catch(e){}setTimeout(function(){try{searchInput.focus();}catch(e){}},100);return;}
     normalPage.style.display='block';
     currentVideos=getVideosForCat(cat);
@@ -987,7 +1132,7 @@ function renderSearchResults(){
     for(var i=0;i<results.length;i++){(function(v,index){
       var card=document.createElement('button');
       card.className='card';
-      card.innerHTML=buildYTThumbWrap(v,false)+'<div class="card-title">'+(v.title||'')+'</div>';
+      card.innerHTML=buildYTThumbWrap(v,false)+'<div class="card-title">'+escapeHtml(v.title||'')+'</div>';
       card.onclick=function(){var catVideos=getVideosForCat(v.cat);var realIndex=-1;for(var k=0;k<catVideos.length;k++){if(catVideos[k].id===v.id){realIndex=k;break;}}openPlayer(catVideos,realIndex>=0?realIndex:index,true);};
       searchGrid.appendChild(card);
       addYTFrameMetaCard(card,v,false);
@@ -1039,6 +1184,7 @@ function openPlayer(videosList,index,fromClick){
     },8000);
     var ytRetryBtn=document.getElementById('ytRetryLoaderBtn');
     if(ytRetryBtn){ytRetryBtn.onclick=function(){try{ytPlayerFailure.classList.remove('show');}catch(e){}openPlayer(videosList,index,fromClick);};}
+    ensureYoutubeFrame();
     youtubeFrame.onload=function(){
       clearTimeout(ytFailTimer);
       ytFailed=true;
@@ -1060,7 +1206,7 @@ function openPlayer(videosList,index,fromClick){
       (function(rv,ri2){
         var rc=document.createElement('button');
         rc.className='related-card';
-        rc.innerHTML='<div class="related-thumb"><img src="https://i.ytimg.com/vi/'+rv.id+'/hqdefault.jpg" alt=""></div><div class="related-title">'+(rv.title||'')+'</div>';
+        rc.innerHTML='<div class="related-thumb"><img src="https://i.ytimg.com/vi/'+rv.id+'/hqdefault.jpg" alt=""></div><div class="related-title">'+escapeHtml(rv.title||'')+'</div>';
         rc.onclick=function(){openPlayer(videosList,ri2,true);};
         relatedScroll.appendChild(rc);
         addYTFrameMetaCard(rc,rv,true);
@@ -1083,6 +1229,7 @@ function openPlayer(videosList,index,fromClick){
 }
 
 function closePlayer(){
+  try{if(isInSubState()){history.back();return;}}catch(e){}
   try{consumePopState();}catch(e){}
   stopPlayback();
   try{localStorage.removeItem('activeVideoId');}catch(e){}
@@ -1125,10 +1272,19 @@ try{window.addEventListener('popstate',function(){
     if(hadSub){stopAllMedia();}
   }catch(e2){}
 });}catch(e){}
-try{window.addEventListener('pagehide',function(){try{stopAllMedia();}catch(e){}});}catch(e){}
-try{window.addEventListener('beforeunload',function(){try{stopAllMedia();}catch(e){}});}catch(e){}
-try{document.addEventListener('visibilitychange',function(){try{if(document.visibilityState==='hidden')stopAllMedia();}catch(e){}});}catch(e){}
-try{window.addEventListener('blur',function(){try{stopAllMedia();}catch(e){}});}catch(e){}
+function onAppBackground(){try{pauseYouTube();}catch(e){}try{stopSatPlayback();}catch(e){}try{stopLiveFrame();}catch(e){}}
+function onAppForeground(){
+  try{
+    if(ourLivePage.style.display==='block'&&ourLiveFrame){
+      var u=ourLiveFrame.getAttribute('src')||'about:blank';
+      if(u==='about:blank'){ourLiveFrame.src='https://afm80.github.io/kidstvlive/';}
+    }
+  }catch(e){}
+}
+try{window.addEventListener('pagehide',function(){try{onAppBackground();}catch(e){}});}catch(e){}
+try{window.addEventListener('beforeunload',function(){try{onAppBackground();}catch(e){}});}catch(e){}
+try{document.addEventListener('visibilitychange',function(){try{if(document.visibilityState==='hidden')onAppBackground();else onAppForeground();}catch(e){}});}catch(e){}
+try{window.addEventListener('pageshow',function(){try{onAppForeground();}catch(e){}});}catch(e){}
 
 /* ===== القنوات الفضائية ===== */
 var satVideoEl=document.getElementById('satVideoEl'),satWrapEl=document.getElementById('satVideoWrap'),satGridEl=document.getElementById('satGrid'),satMsgEl=document.getElementById('satMsg'),satRetryKidsBtn=document.getElementById('satRetryKidsBtn');
@@ -1150,6 +1306,7 @@ function satBuildCards(){
   }
 }
 
+try{document.getElementById('satCloseBtn').onclick=function(e){try{e.stopPropagation();}catch(z){}if(isInSubState()){history.back();return;}stopAllMedia();};}catch(e){}
 function satShowMsg(text){satMsgEl.textContent=text;satMsgEl.style.display='block';satRetryKidsBtn.hidden=!/^⚠/.test(text);}
 function satHideMsg(){satMsgEl.style.display='none';satMsgEl.textContent='';satRetryKidsBtn.hidden=true;}
 satRetryKidsBtn.addEventListener('click',function(){satFallbackCycle=0;if(!satActiveUrl)return;if(satKidsPlayerMode==='backup'){satPlayBackupVideo(satActiveUrl,satActiveName,satActiveImage);}else{satPlayVideo(satActiveUrl,satActiveName,satActiveImage);}});
@@ -1173,6 +1330,7 @@ function satResetPlayers(){
   if(satWrapEl){
     satWrapEl.querySelectorAll('[data-player-host]').forEach(function(host){host.remove();});
   }
+  try{satEnsureKidsVideo();}catch(e){}
   if(satVideoEl){
     satVideoEl.style.display='block';
     satVideoEl.controls=true;
@@ -1259,11 +1417,13 @@ function satPlayVideo(url,name,image,automatic){
       return;
     }
     var item=engines[index++];
+    var advanced=false;
+    var advance=function(){if(advanced||token!==satEngineToken)return;advanced=true;next();};
     satResetPlayersForEngine();
     satVideoEl.muted=false;
     satVideoEl.volume=1;
-    satPlayWithEngine(item.url,item.engine,token,next);
-    satEngineTimer=setTimeout(function(){if(token===satEngineToken)next();},2500);
+    satEngineTimer=setTimeout(advance,4500);
+    satPlayWithEngine(item.url,item.engine,token,advance);
   }
   next();
 }
@@ -1329,11 +1489,45 @@ function loadSatLibraries(){
   chain=chain.then(function(){return loadScriptOnce('https://cdn.jsdelivr.net/npm/shaka-player@4/dist/shaka-player.compiled.js',function(){return !!window.shaka;});});
   chain=chain.then(function(){return loadScriptOnce('https://cdn.jsdelivr.net/npm/flv.js@1/dist/flv.min.js',function(){return !!window.flvjs;});});
   chain=chain.then(function(){return loadScriptOnce('https://vjs.zencdn.net/8.10.0/video.min.js',function(){return !!window.videojs;});});
-  chain=chain.then(function(){return loadScriptOnce('https://cdn.jsdelivr.net/npm/dplayer@latest/dist/DPlayer.min.js',function(){return !!window.DPlayer;});});
-  chain=chain.then(function(){return loadScriptOnce('https://cdn.jsdelivr.net/npm/clappr@latest/dist/clappr.min.js',function(){return !!window.Clappr;});});
+  chain=chain.then(function(){return loadScriptOnce('https://cdn.jsdelivr.net/npm/dplayer@1/dist/DPlayer.min.js',function(){return !!window.DPlayer;});});
+  chain=chain.then(function(){return loadScriptOnce('https://cdn.jsdelivr.net/npm/clappr@0/dist/clappr.min.js',function(){return !!window.Clappr;});});
   return chain.then(function(){satLibsLoaded=true;});
 }
 
+
+/* ===== الشريط السفلي وحالة التحميل (واجهة فقط) ===== */
+(function(){
+  var nav=document.getElementById('bottomNav');
+  function updateNav(){
+    if(!nav)return;
+    var c='all';try{c=localStorage.getItem('activeCat')||'all';}catch(e){}
+    var key=c==='search'?'search':(c==='favorites'?'favorites':'home');
+    [].slice.call(nav.querySelectorAll('.nav-btn')).forEach(function(b){b.classList.toggle('active',b.getAttribute('data-nav')===key);});
+  }
+  var _setCategory=setCategory;
+  setCategory=function(){var r=_setCategory.apply(this,arguments);try{updateNav();}catch(e){}return r;};
+  if(nav){
+    [].slice.call(nav.querySelectorAll('.nav-btn')).forEach(function(b){
+      b.addEventListener('click',function(){
+        var k=b.getAttribute('data-nav');
+        try{setCategory(k==='home'?'all':k);}catch(e){}
+      });
+    });
+  }
+  try{
+    var pp=document.getElementById('playerPage');
+    function syncPlayerClass(){document.body.classList.toggle('in-player',pp.style.display==='block');}
+    if(pp&&window.MutationObserver){new MutationObserver(syncPlayerClass).observe(pp,{attributes:true,attributeFilter:['style']});}
+  }catch(e){}
+  try{
+    var hb=document.querySelector('.header-bar');
+    var setH=function(){if(hb)document.documentElement.style.setProperty('--header-h',hb.offsetHeight+'px');};
+    setH();window.addEventListener('resize',setH);window.addEventListener('load',setH);
+    if(window.ResizeObserver&&hb)new ResizeObserver(setH).observe(hb);
+  }catch(e){}
+  setTimeout(function(){try{document.body.classList.remove('is-loading');}catch(e){}},5000);
+  try{updateNav();}catch(e){}
+})();
 
 /* ===== التشغيل الأولي ===== */
 (function init(){

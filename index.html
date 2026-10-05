@@ -873,13 +873,22 @@ function stopPlayback(){
   try{if(youtubeFrame&&youtubeFrame.contentWindow){youtubeFrame.contentWindow.postMessage('{"event":"command","func":"pauseVideo","args":""}','*');}}catch(e){}
   try{if(youtubeFrame&&youtubeFrame.contentWindow){youtubeFrame.contentWindow.postMessage('{"event":"command","func":"stopVideo","args":""}','*');}}catch(e){}
   try{if(youtubeFrame&&youtubeFrame.contentWindow){youtubeFrame.contentWindow.postMessage('{"event":"command","func":"clearVideo","args":""}','*');}}catch(e){}
-  if(youtubeFrame){youtubeFrame.onload=null;try{youtubeFrame.src='about:blank';}catch(e){}}
-  if(ytPoster){ytPoster.removeAttribute('src');ytPoster.style.display='none';}
+  if(youtubeFrame){
+    youtubeFrame.onload=null;
+    try{youtubeFrame.removeAttribute('src');}catch(e){}
+    try{youtubeFrame.src='about:blank';}catch(e){}
+    try{youtubeFrame.parentNode.removeChild(youtubeFrame);}catch(e){}
+    youtubeFrame=null;
+  }
+  if(ytPoster){try{ytPoster.removeAttribute('src');ytPoster.style.display='none';}catch(e){}}
   try{if(ytPlayerLoader)ytPlayerLoader.classList.remove('show');}catch(e){}
   try{if(ytPlayerFailure)ytPlayerFailure.classList.remove('show');}catch(e){}
   try{if(satPlayerLoader)satPlayerLoader.classList.remove('show');}catch(e){}
   try{if(satPlayerFailure)satPlayerFailure.classList.remove('show');}catch(e){}
-  if(ourLiveFrame){try{ourLiveFrame.src='about:blank';}catch(e){}}
+  if(ourLiveFrame){
+    try{ourLiveFrame.removeAttribute('src');}catch(e){}
+    try{ourLiveFrame.src='about:blank';}catch(e){}
+  }
 }
 
 function stopAllMedia(){
@@ -887,8 +896,19 @@ function stopAllMedia(){
   try{satResetPlayers&&satResetPlayers();}catch(e){}
   document.querySelectorAll('video,audio,iframe').forEach(function(el){
     try{
-      if(el.tagName==='VIDEO'||el.tagName==='AUDIO'){el.pause();el.muted=true;el.volume=0;el.removeAttribute('src');try{el.load();}catch(z){}}
-      else if(el.tagName==='IFRAME'){el.setAttribute('src','about:blank');}
+      if(el.tagName==='VIDEO'||el.tagName==='AUDIO'){
+        el.pause();
+        el.muted=true;
+        el.volume=0;
+        el.removeAttribute('src');
+        try{el.load();}catch(z){}
+        try{el.parentNode.removeChild(el);}catch(z){}
+      }
+      else if(el.tagName==='IFRAME'){
+        el.removeAttribute('src');
+        el.setAttribute('src','about:blank');
+        try{el.parentNode.removeChild(el);}catch(z){}
+      }
     }catch(z){}
   });
 }
@@ -901,7 +921,10 @@ function hideAllPages(){
   ourLivePage.style.display='none';
   searchPage.style.display='none';
   playerPage.style.display='none';
-  if(ourLiveFrame.src!=='about:blank'){ourLiveFrame.src='about:blank';}
+  if(ourLiveFrame){
+    try{ourLiveFrame.removeAttribute('src');}catch(e){}
+    try{ourLiveFrame.src='about:blank';}catch(e){}
+  }
 }
 
 function setCategory(cat){

@@ -1,4 +1,4 @@
-const CACHE_NAME = 'kids-tv-cache-v7';
+const CACHE_NAME = 'kids-tv-cache-v9';
 const ASSETS = ['./', './index.html', './kids-tv.png', './icon-192.png', './icon-512.png', './manifest.json', './firebase-config.js'];
 
 self.addEventListener('install', function (event) {

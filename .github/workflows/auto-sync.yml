@@ -2,27 +2,35 @@ name: Auto Sync YouTube Videos
 
 on:
   schedule:
-    # Runs every hour
+    # كل ساعة
     - cron: '0 * * * *'
-  workflow_dispatch: # Allow manual trigger
+  workflow_dispatch: # تشغيل يدوي
+
+permissions:
+  contents: read
+
+concurrency:
+  group: auto-sync
+  cancel-in-progress: false
 
 jobs:
   sync:
     runs-on: ubuntu-latest
-    
+    timeout-minutes: 15
+
     steps:
     - name: Checkout code
-      uses: actions/checkout@v3
-    
+      uses: actions/checkout@v4
+
     - name: Set up Python
-      uses: actions/setup-python@v4
+      uses: actions/setup-python@v5
       with:
-        python-version: '3.9'
-    
+        python-version: '3.11'
+
     - name: Install dependencies
       run: |
         pip install requests
-    
+
     - name: Run sync script
       env:
         YOUTUBE_API_KEY: ${{ secrets.YOUTUBE_API_KEY }}

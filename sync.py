@@ -6,16 +6,23 @@ from typing import List, Dict, Optional
 
 # Load config from environment variables (GitHub Secrets)
 YOUTUBE_API_KEY = os.environ.get('YOUTUBE_API_KEY')
-FIREBASE_CONFIG_JSON = os.environ.get('FIREBASE_CONFIG')
+FIREBASE_DB_URL = os.environ.get('FIREBASE_DB_URL')
 
 if not YOUTUBE_API_KEY:
     raise Exception("YOUTUBE_API_KEY not found in environment")
 
-if not FIREBASE_CONFIG_JSON:
-    raise Exception("FIREBASE_CONFIG not found in environment")
-
-firebase_config = json.loads(FIREBASE_CONFIG_JSON)
-FIREBASE_DB_URL = firebase_config['databaseURL']
+if not FIREBASE_DB_URL:
+    # Try to get from FIREBASE_CONFIG
+    FIREBASE_CONFIG_JSON = os.environ.get('FIREBASE_CONFIG')
+    if FIREBASE_CONFIG_JSON:
+        try:
+            firebase_config = json.loads(FIREBASE_CONFIG_JSON)
+            FIREBASE_DB_URL = firebase_config.get('databaseURL')
+        except:
+            pass
+    
+    if not FIREBASE_DB_URL:
+        raise Exception("FIREBASE_DB_URL not found in environment")
 
 # Load channels
 with open('channels.txt', 'r', encoding='utf-8') as f:

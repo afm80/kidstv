@@ -155,27 +155,6 @@ def sync():
     existing_videos = get_existing_videos()
     existing_ids = set(existing_videos.keys())
     
-    # Check for duplicates in existing videos and remove them
-    print("Checking for duplicates...")
-    video_count = {}
-    for video_id in existing_ids:
-        video_count[video_id] = video_count.get(video_id, 0) + 1
-    
-    duplicates_removed = 0
-    for video_id, count in video_count.items():
-        if count > 1:
-            # Keep the first, remove others
-            for i in range(count - 1):
-                delete_video_from_firebase(video_id)
-                duplicates_removed += 1
-                print(f"Removed duplicate: {video_id}")
-    
-    if duplicates_removed > 0:
-        print(f"Removed {duplicates_removed} duplicates")
-        # Refresh existing videos after cleanup
-        existing_videos = get_existing_videos()
-        existing_ids = set(existing_videos.keys())
-    
     # Collect videos from channels.txt (handle both video URLs and channel URLs)
     all_videos = []
     channel_ids_from_videos = set()
@@ -216,15 +195,7 @@ def sync():
         else:
             print(f"Skipped duplicate: {video['title']}")
     
-    # Check and remove deleted videos
-    deleted_count = 0
-    for video_id in existing_ids:
-        if not check_video_exists(video_id):
-            delete_video_from_firebase(video_id)
-            deleted_count += 1
-            print(f"Deleted: {video_id}")
-    
-    print(f"Sync completed! Added: {added_count}, Deleted: {deleted_count}, Duplicates removed: {duplicates_removed}")
+    print(f"Sync completed! Added: {added_count}")
 
 if __name__ == "__main__":
     sync()

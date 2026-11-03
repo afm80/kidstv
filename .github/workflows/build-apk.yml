@@ -1,0 +1,67 @@
+name: Build Single HTML to APK
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Set up Java
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'zulu'
+          java-version: '17'
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+
+      - name: Install Cordova
+        run: npm install -g cordova
+
+      - name: Build Android App with Cordova
+        run: |
+          cordova create myApp app.kidstv.com "Kids TV"
+          cd myApp
+          rm -rf www/*
+          cp -r ../. www/ 2>/dev/null || true
+          cordova platform add android
+          cordova build android --release -- --packageType=apk
+
+      - name: Sign APK with my key
+        env:
+          KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+          KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+          KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
+        run: |
+          if [ -z "$KEYSTORE_BASE64" ]; then
+            echo "::error::Signing secrets are missing in this repository (add the 4 ANDROID_* secrets)."
+            exit 1
+          fi
+          echo "$KEYSTORE_BASE64" | base64 -d > "$RUNNER_TEMP/my.jks"
+          BT=$ANDROID_HOME/build-tools/$(ls $ANDROID_HOME/build-tools | sort -V | tail -1)
+          DIR=myApp/platforms/android/app/build/outputs/apk/release
+          IN=$(ls $DIR/*.apk | head -1)
+          $BT/zipalign -f -p 4 "$IN" "$DIR/app-release-signed.apk"
+          $BT/apksigner sign \
+            --ks "$RUNNER_TEMP/my.jks" \
+            --ks-key-alias "$KEY_ALIAS" \
+            --ks-pass env:KEYSTORE_PASSWORD \
+            --key-pass env:KEY_PASSWORD \
+            "$DIR/app-release-signed.apk"
+          $BT/apksigner verify --print-certs "$DIR/app-release-signed.apk"
+          rm -f "$RUNNER_TEMP/my.jks"
+          echo "تم تفعيل التوقيع بمفتاحك."
+
+      - name: Upload APK Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: my-app-apk
+          path: myApp/platforms/android/app/build/outputs/apk/release/app-release-signed.apk
